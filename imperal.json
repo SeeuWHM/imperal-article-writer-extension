@@ -1,9 +1,9 @@
 {
   "manifest_schema_version": 3,
   "sdk_version": "5.0.1",
-  "app_id": "wp-blogger",
+  "app_id": "article-writer",
   "version": "1.5.3",
-  "name": "WP Blogger",
+  "name": "Article Writer",
   "description": "AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",
   "icon": "icon.svg",
   "actions_explicit": true,
@@ -19,8 +19,8 @@
   ],
   "tools": [
     {
-      "name": "wp_blogger",
-      "description": "WP Blogger — SEO, content and Google Search Console tool. ALWAYS use for: Google search positions/rankings (покажи позиции в Google, SEO rankings), keyword research (найди ключевые слова), content plan (придумай контент план для блога), write/rewrite articles (напиши статью), WordPress: publish, draft, show posts, SEO settings, SE Ranking tracking, GSC отчёт, Google Search Console, покажи GSC, клики из Google, аномалии трафика, что падает что растёт, органический трафик Google, покажи органику, GSC данные, search console отчёт.",
+      "name": "article_writer",
+      "description": "Article Writer — SEO, content and Google Search Console tool. ALWAYS use for: Google search positions/rankings (покажи позиции в Google, SEO rankings), keyword research (найди ключевые слова), content plan (придумай контент план для блога), write/rewrite articles (напиши статью), WordPress: publish, draft, show posts, SEO settings, SE Ranking tracking, GSC отчёт, Google Search Console, покажи GSC, клики из Google, аномалии трафика, что падает что растёт, органический трафик Google, покажи органику, GSC данные, search console отчёт.",
       "scopes": [],
       "parameters": {
         "message": {
@@ -72,7 +72,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_plan_ideas",
@@ -89,7 +89,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_plan_writing",
@@ -106,7 +106,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_plan_review",
@@ -123,7 +123,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_plan_done",
@@ -140,7 +140,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_rankings",
@@ -157,7 +157,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_keywords",
@@ -174,7 +174,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_settings",
@@ -191,7 +191,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_docs",
@@ -208,7 +208,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "open_editor",
@@ -234,7 +234,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "set_editor_mode",
@@ -260,7 +260,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_preview",
@@ -277,7 +277,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "go_edit",
@@ -294,7 +294,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "show_editor_panel",
@@ -311,7 +311,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "hide_editor_panel",
@@ -328,7 +328,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "resume_editor",
@@ -345,7 +345,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "new_content",
@@ -397,7 +397,7 @@
       "return_schema": {},
       "event": "seo.content.created",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "import_from_wp",
@@ -456,7 +456,7 @@
       "return_schema": {},
       "event": "seo.content.created",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "save_draft",
@@ -500,7 +500,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "update_status",
@@ -534,7 +534,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "delete_content",
@@ -562,7 +562,7 @@
       "return_schema": {},
       "event": "seo.content.deleted",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "generate_brief",
@@ -594,7 +594,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "save_brief",
@@ -626,7 +626,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "patch_article",
@@ -665,7 +665,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "check_article_quality",
@@ -695,7 +695,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "list_articles",
@@ -712,7 +712,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "migrate_from_store",
@@ -731,7 +731,7 @@
       "return_schema": {},
       "event": "seo.content.created",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "upload_doc",
@@ -765,7 +765,7 @@
       "return_schema": {},
       "event": "seo.docs.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "delete_doc",
@@ -793,7 +793,7 @@
       "return_schema": {},
       "event": "seo.docs.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "list_docs",
@@ -810,7 +810,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "ai_write",
@@ -848,7 +848,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "check_article_job",
@@ -880,7 +880,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "improve_article",
@@ -912,7 +912,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "generate_newsletter",
@@ -952,7 +952,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "fetch_keywords",
@@ -1000,7 +1000,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "fetch_gaps",
@@ -1038,7 +1038,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "fetch_rankings",
@@ -1055,7 +1055,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "list_ser_projects",
@@ -1072,7 +1072,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "build_content_plan",
@@ -1111,7 +1111,7 @@
       "return_schema": {},
       "event": "seo.content.created",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "setup_blog_style",
@@ -1143,7 +1143,7 @@
       "return_schema": {},
       "event": "seo.settings.saved",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "publish_wp",
@@ -1181,7 +1181,7 @@
       "return_schema": {},
       "event": "seo.content.published",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "publish_wp_draft",
@@ -1219,7 +1219,7 @@
       "return_schema": {},
       "event": "seo.content.published",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "publish_wp_publish",
@@ -1257,7 +1257,7 @@
       "return_schema": {},
       "event": "seo.content.published",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "set_wp_seo",
@@ -1301,7 +1301,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "save_settings",
@@ -1573,11 +1573,11 @@
       "return_schema": {},
       "event": "seo.settings.saved",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "get_settings",
-      "description": "Show WP Blogger extension settings — SE Ranking and WordPress API keys (masked). Use ONLY for: SE Ranking keys configured, WordPress credentials check, какие ключи SE Ranking настроены, есть ли ключ SE Ranking, WP Blogger настройки, seranking_api_key, wp_app_password configured. NOT for Matomo/analytics stats — only API key presence check.",
+      "description": "Show Article Writer extension settings — SE Ranking and WordPress API keys (masked). Use ONLY for: SE Ranking keys configured, WordPress credentials check, какие ключи SE Ranking настроены, есть ли ключ SE Ranking, Article Writer настройки, seranking_api_key, wp_app_password configured. NOT for Matomo/analytics stats — only API key presence check.",
       "action_type": "read",
       "chain_callable": false,
       "effects": [],
@@ -1590,7 +1590,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "list_wp_posts",
@@ -1634,7 +1634,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "unpublish_wp",
@@ -1666,7 +1666,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "get_article_link",
@@ -1692,7 +1692,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "rewrite_article",
@@ -1724,7 +1724,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "add_keywords_to_article",
@@ -1758,7 +1758,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "check_seo_meta",
@@ -1788,7 +1788,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "patch_wp_article",
@@ -1822,7 +1822,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "edit_wp_article",
@@ -1856,7 +1856,7 @@
       "return_schema": {},
       "event": "seo.content.updated",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "delete_wp_post",
@@ -1890,7 +1890,7 @@
       "return_schema": {},
       "event": "seo.content.deleted",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "add_tracked_keyword",
@@ -1924,7 +1924,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "remove_tracked_keyword",
@@ -1956,7 +1956,7 @@
       "return_schema": {},
       "event": "seo.nav.changed",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "list_tracked_keywords",
@@ -1973,7 +1973,7 @@
       "return_schema": {},
       "event": "",
       "scopes": [],
-      "owner_chat_tool": "wp_blogger"
+      "owner_chat_tool": "article_writer"
     },
     {
       "name": "gsc_report",

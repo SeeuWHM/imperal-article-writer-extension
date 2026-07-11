@@ -1,13 +1,13 @@
-"""WP Blogger extension — core init, settings, store helpers."""
+"""Article Writer extension — core init, settings, store helpers."""
 from __future__ import annotations
 
 from imperal_sdk import Extension, ChatExtension
 from params import UIStateModel
 
 ext = Extension(
-    "wp-blogger",
+    "article-writer",
     version="1.5.3",
-    display_name="WP Blogger",
+    display_name="Article Writer",
     description="AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",
     icon="icon.svg",
     actions_explicit=True,
@@ -24,9 +24,9 @@ ext = Extension(
 
 chat = ChatExtension(
     ext,
-    tool_name="wp_blogger",
+    tool_name="article_writer",
     description=(
-        "WP Blogger — SEO, content and Google Search Console tool. "
+        "Article Writer — SEO, content and Google Search Console tool. "
         "ALWAYS use for: Google search positions/rankings (покажи позиции в Google, SEO rankings), "
         "keyword research (найди ключевые слова), "
         "content plan (придумай контент план для блога), "

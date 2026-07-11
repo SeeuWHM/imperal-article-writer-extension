@@ -418,9 +418,9 @@ async def save_settings_fn(ctx, params: SaveSettingsParams) -> ActionResult:
 @chat.function(
     "get_settings",
     description=(
-        "Show WP Blogger extension settings — SE Ranking and WordPress API keys (masked). "
+        "Show Article Writer extension settings — SE Ranking and WordPress API keys (masked). "
         "Use ONLY for: SE Ranking keys configured, WordPress credentials check, "
-        "какие ключи SE Ranking настроены, есть ли ключ SE Ranking, WP Blogger настройки, "
+        "какие ключи SE Ranking настроены, есть ли ключ SE Ranking, Article Writer настройки, "
         "seranking_api_key, wp_app_password configured. "
         "NOT for Matomo/analytics stats — only API key presence check."
     ),
