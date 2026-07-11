@@ -1,7 +1,7 @@
 {
   "manifest_schema_version": 3,
   "sdk_version": "5.9.3",
-  "app_id": "imperal-article-writer-extension",
+  "app_id": "article-writer",
   "version": "1.5.3",
   "name": "Article Writer",
   "description": "AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",

@@ -5,7 +5,7 @@ from imperal_sdk import Extension, ChatExtension
 from params import UIStateModel
 
 ext = Extension(
-    "imperal-article-writer-extension",
+    "article-writer",
     version="1.5.3",
     display_name="Article Writer",
     description="AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",
