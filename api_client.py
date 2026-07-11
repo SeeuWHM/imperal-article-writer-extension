@@ -12,12 +12,31 @@ TIMEOUT = 30
 TIMEOUT_PLAN = 120  # content plan: 3 parallel API calls + AI generation
 
 
+def _normalize_backend_url(raw: str) -> str:
+    value = (raw or "").strip()
+    if not value:
+        return ""
+    if not value.startswith(("http://", "https://")):
+        value = f"https://{value}"
+    return value.rstrip("/")
+
+
+def _bearer_headers() -> dict:
+    token = (SERVER_API_KEY or "").strip()
+    if not token:
+        return {}
+    return {"Authorization": f"Bearer {token}"}
+
+
 async def log_action(ctx, action: str, content_id: str, duration_ms: int,
                      success: bool, error: str = "") -> None:
     """Fire-and-forget: POST action log to MOS. Never raises."""
+    base_url = _normalize_backend_url(SERVER_URL)
+    if not base_url:
+        return
     try:
         await ctx.http.post(
-            f"{SERVER_URL}/api/logs/action",
+            f"{base_url}/api/logs/action",
             json={
                 "action": action,
                 "content_id": content_id or "",
@@ -26,7 +45,7 @@ async def log_action(ctx, action: str, content_id: str, duration_ms: int,
                 "error": error,
                 "timestamp": time.time(),
             },
-            headers={"X-API-Key": SERVER_API_KEY},
+            headers=_bearer_headers(),
             timeout=5,
         )
     except Exception:
@@ -34,25 +53,39 @@ async def log_action(ctx, action: str, content_id: str, duration_ms: int,
 
 
 async def _post(ctx, endpoint: str, payload: dict, timeout: int = TIMEOUT) -> dict:
+    base_url = _normalize_backend_url(SERVER_URL)
+    if not base_url:
+        return {"error": "Article Writer backend URL is not configured."}
     resp = await ctx.http.post(
-        f"{SERVER_URL}{endpoint}",
+        f"{base_url}{endpoint}",
         json=payload,
-        headers={"X-API-Key": SERVER_API_KEY},
+        headers=_bearer_headers(),
         timeout=timeout,
     )
     if not resp.ok:
-        return {"error": f"Server error {resp.status_code}"}
+        try:
+            body = resp.text()[:200]
+        except Exception:
+            body = ""
+        return {"error": f"Server error {resp.status_code}: {body}"}
     return resp.json()
 
 
 async def _get(ctx, endpoint: str, timeout: int = TIMEOUT) -> dict:
+    base_url = _normalize_backend_url(SERVER_URL)
+    if not base_url:
+        return {"error": "Article Writer backend URL is not configured."}
     resp = await ctx.http.get(
-        f"{SERVER_URL}{endpoint}",
-        headers={"X-API-Key": SERVER_API_KEY},
+        f"{base_url}{endpoint}",
+        headers=_bearer_headers(),
         timeout=timeout,
     )
     if not resp.ok:
-        return {"error": f"Server error {resp.status_code}"}
+        try:
+            body = resp.text()[:200]
+        except Exception:
+            body = ""
+        return {"error": f"Server error {resp.status_code}: {body}"}
     return resp.json()
 
 
