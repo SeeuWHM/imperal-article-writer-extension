@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.gstack/
+
+LOCAL_CREDENTIALS_AUDIT.md
+
+__MACOSX/
+__pycache__/
+.pytest_cache/
+*.pyc
