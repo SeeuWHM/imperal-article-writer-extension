@@ -7,6 +7,7 @@ from imperal_sdk.types import ActionResult  # noqa: F811
 from wpb_app import chat, ext
 from api_client import mos_docs_create, mos_docs_delete, mos_docs_get_all, mos_docs_list
 from params import DeleteDocParams, EmptyParams, UploadDocParams
+from response_models import DocsListResponse
 
 MAX_CONTEXT_CHARS = 3000  # per doc, for AI injection
 
@@ -81,6 +82,7 @@ async def delete_doc(ctx, params: DeleteDocParams) -> ActionResult:
     "list_docs",
     description="List all uploaded documentation files in the knowledge base.",
     action_type="read",
+    data_model=DocsListResponse,
 )
 async def list_docs_fn(ctx, params: EmptyParams) -> ActionResult:
     """Return all docs in the knowledge base."""

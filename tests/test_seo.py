@@ -37,7 +37,7 @@ async def test_fetch_rankings_no_key(ctx):
 
 async def test_fetch_rankings_no_project_id(ctx):
     await handlers_publish.save_settings_fn(ctx, handlers_publish.SaveSettingsParams(
-        seranking_api_key="project_key_test",
+        seranking_api_key="dummy-project-id",
     ))
     result = await handlers_seo.fetch_rankings(ctx, None)
     assert result.status == "error"

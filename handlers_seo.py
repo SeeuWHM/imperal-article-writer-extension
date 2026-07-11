@@ -10,6 +10,7 @@ from api_client import (ser_keywords, ser_gaps, ser_rankings, ser_projects, cont
                         gsc_verify, gsc_pages, gsc_top_queries, gsc_anomalies, gsc_growth_opportunities, _gsc_auth_payload)
 from handlers_docs import _load_docs
 from params import FetchKeywordsParams, FetchGapsParams, FetchRankingsParams, ListProjectsParams, BuildPlanParams, SetupBlogStyleParams
+from response_models import KeywordResultsResponse, GapResultsResponse, RankingsResponse, ProjectsResponse, GenericPayloadResponse
 
 
 @chat.function(
@@ -23,6 +24,7 @@ from params import FetchKeywordsParams, FetchGapsParams, FetchRankingsParams, Li
     ),
     action_type="read",
     event="seo.nav.changed",
+    data_model=KeywordResultsResponse,
 )
 async def fetch_keywords(ctx, params: FetchKeywordsParams) -> ActionResult:
     """Fetch organic keywords for the domain from SE Ranking."""
@@ -56,6 +58,7 @@ async def fetch_keywords(ctx, params: FetchKeywordsParams) -> ActionResult:
     ),
     action_type="read",
     event="seo.nav.changed",
+    data_model=GapResultsResponse,
 )
 async def fetch_gaps(ctx, params: FetchGapsParams) -> ActionResult:
     """Fetch keyword gaps vs a competitor domain."""
@@ -93,6 +96,7 @@ async def fetch_gaps(ctx, params: FetchGapsParams) -> ActionResult:
     ),
     action_type="read",
     event="seo.nav.changed",
+    data_model=RankingsResponse,
 )
 async def fetch_rankings(ctx, params: FetchRankingsParams) -> ActionResult:
     """Fetch keyword rankings + AI referrer traffic in parallel."""
@@ -136,6 +140,7 @@ async def fetch_rankings(ctx, params: FetchRankingsParams) -> ActionResult:
     "list_ser_projects",
     description="List SE Ranking projects — use this to find the project_id for settings.",
     action_type="read",
+    data_model=ProjectsResponse,
 )
 async def list_ser_projects(ctx, params: ListProjectsParams) -> ActionResult:
     """List all SE Ranking projects to find the project ID."""
@@ -343,6 +348,7 @@ class GSCPageParams(_BM):
     ),
     action_type="read",
     event="gsc.report",
+    data_model=GenericPayloadResponse,
 )
 async def gsc_report(ctx, params: EmptyGSCParams) -> ActionResult:
     try:

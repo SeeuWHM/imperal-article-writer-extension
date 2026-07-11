@@ -7,7 +7,7 @@ import handlers_publish
 from handlers_publish import _pick_category, _prepare_content
 
 _FAKE_PW = "fake-test-pw"        # nosec — not a real credential
-_FAKE_KEY = "fake-test-data-key"  # nosec — not a real credential
+_FAKE_KEY = "dummy-sr-token"  # nosec — not a real credential
 
 
 @pytest.fixture

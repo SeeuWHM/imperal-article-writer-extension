@@ -12,6 +12,7 @@ from api_wordpress import create_post, update_post
 from params import (PublishWpParams, SaveSettingsParams, SetWpSeoParams, ListWpPostsParams,
                     UnpublishWpParams, GetArticleLinkParams, RewriteArticleParams,
                     AddKeywordsParams, CheckSeoMetaParams, EmptyParams)
+from response_models import SettingsResponse, WPPostsResponse, LinkLookupResponse, GenericPayloadResponse
 
 
 async def _resolve_id(ctx, content_id: str, keyword_hint: str = "") -> str:
@@ -425,6 +426,7 @@ async def save_settings_fn(ctx, params: SaveSettingsParams) -> ActionResult:
         "NOT for Matomo/analytics stats — only API key presence check."
     ),
     action_type="read",
+    data_model=SettingsResponse,
 )
 async def get_settings(ctx, params: EmptyParams) -> ActionResult:
     """Show which settings are configured (keys masked)."""
@@ -466,6 +468,7 @@ async def get_settings(ctx, params: EmptyParams) -> ActionResult:
     ),
     action_type="read",
     event="",
+    data_model=WPPostsResponse,
 )
 async def list_wp_posts(ctx, params: ListWpPostsParams) -> ActionResult:
     """Fetch and display WordPress posts."""
@@ -589,6 +592,7 @@ async def unpublish_wp(ctx, params: UnpublishWpParams) -> ActionResult:
         "Do NOT use Google or web search — use this tool instead."
     ),
     action_type="read",
+    data_model=LinkLookupResponse,
 )
 async def get_article_link(ctx, params: GetArticleLinkParams) -> ActionResult:
     """Find WP post URL by title or keyword."""
@@ -665,6 +669,7 @@ async def get_article_link(ctx, params: GetArticleLinkParams) -> ActionResult:
         "show me the article text, what does the article say, read the post."
     ),
     action_type="read",
+    data_model=GenericPayloadResponse,
 )
 async def get_wp_post_content(ctx, params: GetArticleLinkParams) -> ActionResult:
     """Fetch full content of a WP post by title or keyword."""
@@ -832,6 +837,7 @@ async def add_keywords_to_article(ctx, params: AddKeywordsParams) -> ActionResul
         "Works with content plan ID or WP post ID (numeric)."
     ),
     action_type="read",
+    data_model=GenericPayloadResponse,
 )
 async def check_seo_meta(ctx, params: CheckSeoMetaParams) -> ActionResult:
     """Show Rank Math SEO settings for an article."""

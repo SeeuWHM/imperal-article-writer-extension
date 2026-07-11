@@ -5,6 +5,7 @@ from imperal_sdk.types import ActionResult  # noqa: F811
 from wpb_app import chat
 from api_client import ser_add_keyword, ser_remove_keyword, ser_list_site_keywords
 from params import EmptyParams
+from response_models import TrackedKeywordsResponse
 
 from pydantic import BaseModel, Field
 
@@ -101,6 +102,7 @@ async def remove_tracked_keyword(ctx, params: RemoveTrackedKeywordParams) -> Act
         "'what am I tracking in SE Ranking', 'покажи все мои ключевые слова'."
     ),
     action_type="read",
+    data_model=TrackedKeywordsResponse,
 )
 async def list_tracked_keywords(ctx, params: EmptyParams) -> ActionResult:
     """List all keywords tracked in SE Ranking with IDs."""

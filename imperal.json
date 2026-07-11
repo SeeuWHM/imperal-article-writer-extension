@@ -1,6 +1,6 @@
 {
   "manifest_schema_version": 3,
-  "sdk_version": "5.0.1",
+  "sdk_version": "5.9.3",
   "app_id": "article-writer",
   "version": "1.5.3",
   "name": "Article Writer",
@@ -19,21 +19,6 @@
   ],
   "tools": [
     {
-      "name": "article_writer",
-      "description": "Article Writer — SEO, content and Google Search Console tool. ALWAYS use for: Google search positions/rankings (покажи позиции в Google, SEO rankings), keyword research (найди ключевые слова), content plan (придумай контент план для блога), write/rewrite articles (напиши статью), WordPress: publish, draft, show posts, SEO settings, SE Ranking tracking, GSC отчёт, Google Search Console, покажи GSC, клики из Google, аномалии трафика, что падает что растёт, органический трафик Google, покажи органику, GSC данные, search console отчёт.",
-      "scopes": [],
-      "parameters": {
-        "message": {
-          "type": "string",
-          "required": false
-        },
-        "kwargs": {
-          "type": "string",
-          "required": true
-        }
-      }
-    },
-    {
       "name": "skeleton_refresh_current_article",
       "description": "Currently open article in editor — keyword, title, word count, status, article_id",
       "scopes": [],
@@ -47,7 +32,7 @@
     },
     {
       "name": "skeleton_refresh_wp_config",
-      "description": "WordPress + SE Ranking connection status and domain",
+      "description": "WordPress, SE Ranking, GSC, and Matomo Analytics connection status, site domain, brand info",
       "scopes": [],
       "parameters": {}
     },
@@ -61,7 +46,7 @@
       "name": "go_plan",
       "description": "Switch main panel to Content Plan view.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -69,8 +54,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -78,7 +95,7 @@
       "name": "go_plan_ideas",
       "description": "Switch to Content Plan showing only Idea status items.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -86,8 +103,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -95,7 +144,7 @@
       "name": "go_plan_writing",
       "description": "Switch to Content Plan showing only Writing status items.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -103,8 +152,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -112,7 +193,7 @@
       "name": "go_plan_review",
       "description": "Switch to Content Plan showing only Review status items.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -120,8 +201,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -129,7 +242,7 @@
       "name": "go_plan_done",
       "description": "Switch to Content Plan showing only Published/Done items.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -137,8 +250,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -146,7 +291,7 @@
       "name": "go_rankings",
       "description": "Switch main panel to Rankings view.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -154,8 +299,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -163,7 +340,7 @@
       "name": "go_keywords",
       "description": "Switch main panel to Keyword Research view.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -171,8 +348,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -180,7 +389,7 @@
       "name": "go_settings",
       "description": "Switch main panel to Settings view.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -188,8 +397,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -197,7 +438,7 @@
       "name": "go_docs",
       "description": "Switch main panel to Knowledge Base (docs) view.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -205,8 +446,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -214,7 +487,7 @@
       "name": "open_editor",
       "description": "Open a specific content item in the editor.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -231,8 +504,40 @@
         "title": "OpenEditorParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -240,7 +545,7 @@
       "name": "set_editor_mode",
       "description": "Toggle editor between edit and preview mode.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -257,8 +562,40 @@
         "title": "SetEditorModeParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -266,7 +603,7 @@
       "name": "go_preview",
       "description": "Switch editor to preview mode.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -274,8 +611,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -283,7 +652,7 @@
       "name": "go_edit",
       "description": "Switch editor to edit mode.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -291,8 +660,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -300,7 +701,7 @@
       "name": "show_editor_panel",
       "description": "Show the article text editor in Step 3.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -308,8 +709,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -317,7 +750,7 @@
       "name": "hide_editor_panel",
       "description": "Hide the article text editor in Step 3.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -325,8 +758,40 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -334,7 +799,7 @@
       "name": "resume_editor",
       "description": "Return to the editor for the currently open content item.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -342,14 +807,46 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "section": {
+            "default": "plan",
+            "title": "Section",
+            "type": "string"
+          },
+          "filters": {
+            "additionalProperties": true,
+            "title": "Filters",
+            "type": "object"
+          },
+          "selected_id": {
+            "default": "",
+            "title": "Selected Id",
+            "type": "string"
+          },
+          "editor_mode": {
+            "default": "edit",
+            "title": "Editor Mode",
+            "type": "string"
+          },
+          "show_editor": {
+            "default": false,
+            "title": "Show Editor",
+            "type": "boolean"
+          }
+        },
+        "title": "NavStateResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
     {
       "name": "new_content",
-      "description": "Create a new content plan item (blog post or newsletter) and open it in the editor.",
+      "description": "Create a new EMPTY content plan item (blog post or newsletter placeholder) and open it in the editor. Use ONLY for creating a blank placeholder — NOT for AI article writing (use ai_write for that).",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -396,6 +893,8 @@
       },
       "return_schema": {},
       "event": "seo.content.created",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -455,6 +954,8 @@
       },
       "return_schema": {},
       "event": "seo.content.created",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -499,6 +1000,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -533,6 +1036,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -560,7 +1065,9 @@
         "type": "object"
       },
       "return_schema": {},
-      "event": "seo.content.deleted",
+      "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -593,6 +1100,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -625,6 +1134,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -664,6 +1175,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -671,7 +1184,7 @@
       "name": "check_article_quality",
       "description": "Script-based article quality audit — zero AI tokens. Checks: word count, H2/H3 structure, comparison table, FAQ, outbound links, keyword density, em dashes, placeholders, bold text, lists. Returns score 0-100 and specific issues to fix.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -692,8 +1205,45 @@
         "title": "AiBriefParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "content_id": {
+            "default": "",
+            "title": "Content Id",
+            "type": "string"
+          },
+          "quality_score": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Quality Score"
+          },
+          "checks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
+          "summary": {
+            "default": "",
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "title": "QualityCheckResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -701,7 +1251,7 @@
       "name": "list_articles",
       "description": "List all content items in the content plan (articles, newsletters). Use when user asks: show my articles, what articles do I have, list content, show drafts, what have I written, articles from another device.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -709,8 +1259,108 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "ArticleSummaryRecord": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "keyword": {
+                "default": "",
+                "title": "Keyword",
+                "type": "string"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "type": {
+                "default": "blog",
+                "title": "Type",
+                "type": "string"
+              },
+              "volume": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Volume"
+              },
+              "difficulty": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Difficulty"
+              },
+              "wp_post_id": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wp Post Id"
+              },
+              "wp_url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Wp Url"
+              }
+            },
+            "title": "ArticleSummaryRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/ArticleSummaryRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "ArticleListResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -730,6 +1380,37 @@
       },
       "return_schema": {},
       "event": "seo.content.created",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "show_article",
+      "description": "Show the full article text in chat. ALWAYS USE for: покажи статью, отправь статью, покажи текст статьи, show article, send article, покажи полный текст, отправь мне статью, покажи что написано, покажи содержимое статьи, вывести статью в чат.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {},
+        "title": "EmptyParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "item": {
+            "additionalProperties": true,
+            "title": "Item",
+            "type": "object"
+          }
+        },
+        "title": "ArticleDetailResponse",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -764,6 +1445,8 @@
       },
       "return_schema": {},
       "event": "seo.docs.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -792,6 +1475,8 @@
       },
       "return_schema": {},
       "event": "seo.docs.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -799,7 +1484,7 @@
       "name": "list_docs",
       "description": "List all uploaded documentation files in the knowledge base.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -807,14 +1492,75 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "DocRecord": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "size": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Size"
+              },
+              "uploaded_at": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Uploaded At"
+              }
+            },
+            "title": "DocRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/DocRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "DocsListResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
     {
       "name": "ai_write",
-      "description": "Generate a full SEO + AI-optimized article. Runs in background — result auto-delivered to chat when done (~60-90s), no need to call check_article_job. Phase 1: enrich keyword set (secondary KWs, LSI, FAQ). Phase 2: write via MOS content engine. section: full | improve",
+      "description": "Generate full AI-written article content with SEO optimization. ALWAYS USE for: напиши статью, сгенерируй статью, напиши содержимое, write article with AI, generate article content, AI article, напиши текст статьи, заполни статью AI, write full article. Phase 1: keyword enrichment (secondary KWs, LSI, FAQ). Phase 2: AI writes full article via MOS. Background — result auto-delivered (~60-90s). DO NOT use for creating empty content placeholders — use new_content for that.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -847,12 +1593,14 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": true,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
     {
       "name": "check_article_job",
-      "description": "Fallback: retrieve a completed article generation job started in a PREVIOUS SESSION or interrupted run. Do NOT call after normal ai_write — ai_write runs in background and auto-delivers the result. Only use if ai_write was interrupted before delivering its result.",
+      "description": "Fallback: retrieve a completed article generation job started in a previous session. Only needed if ai_write was interrupted or started before background support. Returns 'pending' if still generating.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -879,6 +1627,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -911,6 +1661,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": true,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -951,6 +1703,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -958,7 +1712,7 @@
       "name": "fetch_keywords",
       "description": "Find keywords using SE Ranking — keyword research, volume, difficulty, positions. Use when user asks: find keywords, what keywords to target, keyword ideas for topic X, show me keywords for [topic], поиск ключевых слов, найди ключевые слова, какие ключевики взять, keywords for [topic/niche]. Uses configured domain by default. All params optional.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -997,8 +1751,100 @@
         "title": "FetchKeywordsParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "KeywordResultRecord": {
+            "properties": {
+              "keyword": {
+                "default": "",
+                "title": "Keyword",
+                "type": "string"
+              },
+              "volume": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Volume"
+              },
+              "difficulty": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Difficulty"
+              },
+              "cpc": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Cpc"
+              },
+              "position": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Position"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              }
+            },
+            "title": "KeywordResultRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/KeywordResultRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "KeywordResultsResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1006,7 +1852,7 @@
       "name": "fetch_gaps",
       "description": "Find keyword gaps vs competitor — keywords competitor ranks for but we don't. Use when user asks: what keywords am I missing, gap analysis, competitor keywords, что я упускаю по ключевым словам, анализ конкурентов, keyword gaps.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1035,8 +1881,100 @@
         "title": "FetchGapsParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "GapResultRecord": {
+            "properties": {
+              "keyword": {
+                "default": "",
+                "title": "Keyword",
+                "type": "string"
+              },
+              "volume": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Volume"
+              },
+              "difficulty": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Difficulty"
+              },
+              "position": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Position"
+              },
+              "competitor_position": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Competitor Position"
+              },
+              "cpc": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Cpc"
+              }
+            },
+            "title": "GapResultRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/GapResultRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "GapResultsResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1044,7 +1982,7 @@
       "name": "fetch_rankings",
       "description": "Show ORGANIC Google search positions from SE Ranking — NOT Microsoft Ads, NOT paid advertising. Use for SEO keyword ranking positions only. покажи мои позиции, позиции в Google, SEO позиции, мои позиции в поиске, покажи SEO Rankings, на каком месте сайт в Google, keyword rankings, органические позиции.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1052,8 +1990,76 @@
         "title": "FetchRankingsParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "RankingRecord": {
+            "properties": {
+              "keyword": {
+                "default": "",
+                "title": "Keyword",
+                "type": "string"
+              },
+              "position": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Position"
+              },
+              "change": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Change"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              }
+            },
+            "title": "RankingRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/RankingRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "RankingsResponse",
+        "type": "object"
+      },
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1061,7 +2067,7 @@
       "name": "list_ser_projects",
       "description": "List SE Ranking projects — use this to find the project_id for settings.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1069,8 +2075,66 @@
         "title": "ListProjectsParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "ProjectRecord": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Id"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "domain": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Domain"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "ProjectRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/ProjectRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "ProjectsResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1110,6 +2174,8 @@
       },
       "return_schema": {},
       "event": "seo.content.created",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1142,6 +2208,108 @@
       },
       "return_schema": {},
       "event": "seo.settings.saved",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "gsc_report",
+      "description": "Show Google Search Console (GSC) report: clicks, impressions, CTR, avg position, top pages, top queries, anomalies (traffic spikes/drops), growth opportunities. ALWAYS use for: GSC отчёт, покажи GSC, клики из Google, позиции в поиске, аномалии трафика, что падает, что растёт, трафик из поиска, google search console, покажи органику, gsc данные, какие статьи выросли, какие статьи падают, вокруг каких кейвордов растут статьи, blog статьи трафик из поиска, которые статьи хорошо ранжируются, какие страницы теряют трафик, где теряю клики, SEO трафик отчёт.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {},
+        "title": "EmptyGSCParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "title": "GenericPayloadResponse",
+        "type": "object"
+      },
+      "event": "gsc.report",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "gsc_connect_oauth",
+      "description": "Connect GSC via Google OAuth2 using credentials.json from Google Cloud. Step 1: user pastes contents of credentials.json file, gets auth URL. Step 2: user visits URL, authorizes, pastes auth code — system saves authorized credentials. Use when: 'подключи GSC через гугл аккаунт', 'OAuth GSC', 'give me GSC auth link'. If auth_code is empty — returns auth URL. If auth_code is provided — exchanges and saves.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "credentials_json": {
+            "title": "Credentials Json",
+            "type": "string"
+          },
+          "auth_code": {
+            "default": "",
+            "title": "Auth Code",
+            "type": "string"
+          },
+          "site_url": {
+            "default": "",
+            "title": "Site Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "credentials_json"
+        ],
+        "title": "GSCOAuthParams",
+        "type": "object"
+      },
+      "return_schema": {},
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "save_gsc_credentials",
+      "description": "Save GSC credentials directly to settings. Use: site_url=URL credentials_json=JSON",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:settings"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "site_url": {
+            "title": "Site Url",
+            "type": "string"
+          },
+          "credentials_json": {
+            "title": "Credentials Json",
+            "type": "string"
+          }
+        },
+        "required": [
+          "site_url",
+          "credentials_json"
+        ],
+        "title": "_GSCCredsParams",
+        "type": "object"
+      },
+      "return_schema": {},
+      "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1180,6 +2348,8 @@
       },
       "return_schema": {},
       "event": "seo.content.published",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1218,12 +2388,14 @@
       },
       "return_schema": {},
       "event": "seo.content.published",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
     {
       "name": "publish_wp_publish",
-      "description": "Publish the current article to WordPress as LIVE (publicly visible, not draft). ALWAYS use for: опубликуй в WordPress, опубликуй статью, публикуй на сайт, publish to wordpress, make it live, опубликуй сейчас, выложи в блог, опубликуй вживую, опубликовать сейчас, запустить статью, сделать видимой, publish live, make public, go live with article.",
+      "description": "Publish the current article to WordPress as LIVE (publicly visible). ALWAYS use for: опубликуй в WordPress, опубликуй статью, публикуй на сайт, publish to wordpress, make it live, опубликуй сейчас, выложи в блог.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1256,6 +2428,8 @@
       },
       "return_schema": {},
       "event": "seo.content.published",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1300,6 +2474,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1324,7 +2500,19 @@
               }
             ],
             "default": null,
-            "title": "Seranking API Key"
+            "title": "Seranking Api Key"
+          },
+          "seranking_data_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Seranking Data Key"
           },
           "seranking_project_id": {
             "anyOf": [
@@ -1338,7 +2526,7 @@
             "default": null,
             "title": "Seranking Project Id"
           },
-          "seranking_project_id": {
+          "seranking_project_key": {
             "anyOf": [
               {
                 "type": "string"
@@ -1348,7 +2536,7 @@
               }
             ],
             "default": null,
-            "title": "Seranking Project Id"
+            "title": "Seranking Project Key"
           },
           "seranking_domain": {
             "anyOf": [
@@ -1572,6 +2760,8 @@
       },
       "return_schema": {},
       "event": "seo.settings.saved",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1579,7 +2769,7 @@
       "name": "get_settings",
       "description": "Show Article Writer extension settings — SE Ranking and WordPress API keys (masked). Use ONLY for: SE Ranking keys configured, WordPress credentials check, какие ключи SE Ranking настроены, есть ли ключ SE Ranking, Article Writer настройки, seranking_api_key, wp_app_password configured. NOT for Matomo/analytics stats — only API key presence check.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1587,8 +2777,23 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "title": "SettingsResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1596,7 +2801,7 @@
       "name": "list_wp_posts",
       "description": "List/show existing WordPress posts from the blog. READ-ONLY — does NOT create or save anything. Use ONLY when user asks to SEE or LIST posts: show WP posts, покажи статьи в WP, список постов, what's in WordPress, show published articles, покажи черновики в WP. DO NOT use when user wants to SAVE or PUBLISH a new article — use publish_wp_draft for that.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1631,8 +2836,71 @@
         "title": "ListWpPostsParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "WPPostRecord": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "title": "WPPostRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/WPPostRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "WPPostsResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1665,6 +2933,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1672,7 +2942,7 @@
       "name": "get_article_link",
       "description": "Find the URL of a specific article on OUR WordPress blog — NOT a Google search. Use for internal blog post lookups: 'найди ссылку на статью', 'где статья про X', 'дай ссылку на пост', 'url статьи X', 'можешь найти где статья', 'link to our article about X', 'permalink нашей статьи'. Searches WordPress drafts and published posts directly. Do NOT use Google or web search — use this tool instead.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1689,8 +2959,58 @@
         "title": "GetArticleLinkParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "url": {
+            "default": "",
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "title": "LinkLookupResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "get_wp_post_content",
+      "description": "Show the full text/content of a specific WordPress post or draft. Use when user asks: покажи текст статьи, покажи содержание черновика, что написано в статье X, покажи пост, покажи текст черновика, show me the article text, what does the article say, read the post.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "title_or_keyword": {
+            "description": "Title or keyword to search for in WordPress posts",
+            "title": "Title Or Keyword",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title_or_keyword"
+        ],
+        "title": "GetArticleLinkParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "title": "GenericPayloadResponse",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1723,6 +3043,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": true,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1757,6 +3079,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1764,7 +3088,7 @@
       "name": "check_seo_meta",
       "description": "Show SEO settings for an article — Rank Math focus keyword, secondary keywords, meta description, keyword density, word count, WP status. Use when user asks about SEO of an article — 'покажи rank math', 'seo настройки статьи', 'как настроено seo', 'keyword density', 'какой focus keyword', 'meta description статьи', 'check seo', 'seo audit article', 'посмотреть настройки статьи'. Works with content plan ID or WP post ID (numeric).",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1785,8 +3109,20 @@
         "title": "CheckSeoMetaParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "properties": {
+          "data": {
+            "additionalProperties": true,
+            "title": "Data",
+            "type": "object"
+          }
+        },
+        "title": "GenericPayloadResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1821,6 +3157,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": true,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1855,6 +3193,8 @@
       },
       "return_schema": {},
       "event": "seo.content.updated",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1889,6 +3229,8 @@
       },
       "return_schema": {},
       "event": "seo.content.deleted",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1923,6 +3265,8 @@
       },
       "return_schema": {},
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1955,6 +3299,8 @@
       },
       "return_schema": {},
       "event": "seo.nav.changed",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
     },
@@ -1962,7 +3308,7 @@
       "name": "list_tracked_keywords",
       "description": "List all keywords tracked in SE Ranking with IDs and positions. Use when user wants to see tracked keywords — 'какие ключевые слова я отслеживаю', 'список трекинга', 'сколько кейвордов в трекинге', 'show tracked keywords', 'what am I tracking in SE Ranking', 'покажи все мои ключевые слова'.",
       "action_type": "read",
-      "chain_callable": false,
+      "chain_callable": true,
       "effects": [],
       "id_projection": "",
       "params_schema": {
@@ -1970,38 +3316,90 @@
         "title": "EmptyParams",
         "type": "object"
       },
-      "return_schema": {},
+      "return_schema": {
+        "$defs": {
+          "TrackedKeywordRecord": {
+            "properties": {
+              "keyword": {
+                "default": "",
+                "title": "Keyword",
+                "type": "string"
+              },
+              "position": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Position"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "volume": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Volume"
+              },
+              "difficulty": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Difficulty"
+              }
+            },
+            "title": "TrackedKeywordRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/TrackedKeywordRecord"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "TrackedKeywordsResponse",
+        "type": "object"
+      },
       "event": "",
+      "background": false,
+      "long_running": false,
       "scopes": [],
       "owner_chat_tool": "article_writer"
-    },
-    {
-      "name": "gsc_report",
-      "description": "Show Google Search Console report: clicks, impressions, positions, anomalies, growth opportunities.",
-      "action_type": "read",
-      "scopes": [],
-      "parameters": {}
-    },
-    {
-      "name": "save_gsc_credentials",
-      "description": "Save GSC OAuth2 credentials to settings.",
-      "action_type": "write",
-      "scopes": [],
-      "parameters": {}
-    },
-    {
-      "name": "gsc_connect_oauth",
-      "description": "Connect GSC via Google OAuth2 flow using credentials.json.",
-      "action_type": "write",
-      "scopes": [],
-      "parameters": {}
-    },
-    {
-      "name": "get_wp_post_content",
-      "description": "Show full text of a WordPress post or draft.",
-      "action_type": "read",
-      "scopes": [],
-      "parameters": {}
     }
   ],
   "signals": [],
@@ -2012,5 +3410,19 @@
     "health_check": {
       "interval_sec": 60
     }
-  }
+  },
+  "panels": [
+    {
+      "panel_id": "sidebar",
+      "slot": "left",
+      "title": "SEO & Content",
+      "tree": {}
+    },
+    {
+      "panel_id": "editor",
+      "slot": "center",
+      "title": "SEO & Content",
+      "tree": {}
+    }
+  ]
 }

@@ -5,65 +5,66 @@ from imperal_sdk.types import ActionResult  # noqa: F811
 from wpb_app import chat, save_ui_state, create_content as _create, get_content as _get_content, load_settings, update_content as _upd
 from api_client import _post
 from params import OpenEditorParams, CreateContentParams, SetEditorModeParams, EmptyParams, ImportFromWpParams
+from response_models import NavStateResponse
 
 
-@chat.function("go_plan", description="Switch main panel to Content Plan view.", action_type="read", event="seo.nav.changed")
+@chat.function("go_plan", description="Switch main panel to Content Plan view.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_plan(ctx, params: EmptyParams) -> ActionResult:
     """Switch to Content Plan view."""
     await save_ui_state(ctx, {"active_view": "plan", "plan_filter": "all"})
     return ActionResult.success(data={}, summary="Switched to Content Plan")
 
 
-@chat.function("go_plan_ideas", description="Switch to Content Plan showing only Idea status items.", action_type="read", event="seo.nav.changed")
+@chat.function("go_plan_ideas", description="Switch to Content Plan showing only Idea status items.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_plan_ideas(ctx, params: EmptyParams) -> ActionResult:
     """Filter Content Plan to show only Idea items."""
     await save_ui_state(ctx, {"active_view": "plan", "plan_filter": "idea"})
     return ActionResult.success(data={}, summary="Plan: Ideas")
 
 
-@chat.function("go_plan_writing", description="Switch to Content Plan showing only Writing status items.", action_type="read", event="seo.nav.changed")
+@chat.function("go_plan_writing", description="Switch to Content Plan showing only Writing status items.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_plan_writing(ctx, params: EmptyParams) -> ActionResult:
     """Filter Content Plan to show only Writing items."""
     await save_ui_state(ctx, {"active_view": "plan", "plan_filter": "writing"})
     return ActionResult.success(data={}, summary="Plan: Writing")
 
 
-@chat.function("go_plan_review", description="Switch to Content Plan showing only Review status items.", action_type="read", event="seo.nav.changed")
+@chat.function("go_plan_review", description="Switch to Content Plan showing only Review status items.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_plan_review(ctx, params: EmptyParams) -> ActionResult:
     """Filter Content Plan to show only Review items."""
     await save_ui_state(ctx, {"active_view": "plan", "plan_filter": "review"})
     return ActionResult.success(data={}, summary="Plan: Review")
 
 
-@chat.function("go_plan_done", description="Switch to Content Plan showing only Published/Done items.", action_type="read", event="seo.nav.changed")
+@chat.function("go_plan_done", description="Switch to Content Plan showing only Published/Done items.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_plan_done(ctx, params: EmptyParams) -> ActionResult:
     """Filter Content Plan to show only Published items."""
     await save_ui_state(ctx, {"active_view": "plan", "plan_filter": "published"})
     return ActionResult.success(data={}, summary="Plan: Done")
 
 
-@chat.function("go_rankings", description="Switch main panel to Rankings view.", action_type="read", event="seo.nav.changed")
+@chat.function("go_rankings", description="Switch main panel to Rankings view.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_rankings(ctx, params: EmptyParams) -> ActionResult:
     """Switch to Rankings view."""
     await save_ui_state(ctx, {"active_view": "rankings"})
     return ActionResult.success(data={}, summary="Switched to Rankings")
 
 
-@chat.function("go_keywords", description="Switch main panel to Keyword Research view.", action_type="read", event="seo.nav.changed")
+@chat.function("go_keywords", description="Switch main panel to Keyword Research view.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_keywords(ctx, params: EmptyParams) -> ActionResult:
     """Switch to Keyword Research view."""
     await save_ui_state(ctx, {"active_view": "keywords"})
     return ActionResult.success(data={}, summary="Switched to Keywords")
 
 
-@chat.function("go_settings", description="Switch main panel to Settings view.", action_type="read", event="seo.nav.changed")
+@chat.function("go_settings", description="Switch main panel to Settings view.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_settings(ctx, params: EmptyParams) -> ActionResult:
     """Switch to Settings view."""
     await save_ui_state(ctx, {"active_view": "settings"})
     return ActionResult.success(data={}, summary="Switched to Settings")
 
 
-@chat.function("go_docs", description="Switch main panel to Knowledge Base (docs) view.", action_type="read", event="seo.nav.changed")
+@chat.function("go_docs", description="Switch main panel to Knowledge Base (docs) view.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_docs(ctx, params: EmptyParams) -> ActionResult:
     """Switch to Knowledge Base view."""
     await save_ui_state(ctx, {"active_view": "docs"})
@@ -75,6 +76,7 @@ async def go_docs(ctx, params: EmptyParams) -> ActionResult:
     description="Open a specific content item in the editor.",
     action_type="read",
     event="seo.nav.changed",
+    data_model=NavStateResponse,
 )
 async def open_editor(ctx, params: OpenEditorParams) -> ActionResult:
     """Open a content item in the editor by ID."""
@@ -113,6 +115,7 @@ async def open_editor(ctx, params: OpenEditorParams) -> ActionResult:
     description="Toggle editor between edit and preview mode.",
     action_type="read",
     event="seo.nav.changed",
+    data_model=NavStateResponse,
 )
 async def set_editor_mode(ctx, params: SetEditorModeParams) -> ActionResult:
     """Set editor display mode to 'edit' or 'preview'."""
@@ -120,28 +123,28 @@ async def set_editor_mode(ctx, params: SetEditorModeParams) -> ActionResult:
     return ActionResult.success(data={}, summary=f"Editor mode: {params.mode}")
 
 
-@chat.function("go_preview", description="Switch editor to preview mode.", action_type="read", event="seo.nav.changed")
+@chat.function("go_preview", description="Switch editor to preview mode.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_preview(ctx, params: EmptyParams) -> ActionResult:
     """Switch editor to preview mode."""
     await save_ui_state(ctx, {"editor_mode": "preview"})
     return ActionResult.success(data={}, summary="Preview mode")
 
 
-@chat.function("go_edit", description="Switch editor to edit mode.", action_type="read", event="seo.nav.changed")
+@chat.function("go_edit", description="Switch editor to edit mode.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def go_edit(ctx, params: EmptyParams) -> ActionResult:
     """Switch editor to edit mode."""
     await save_ui_state(ctx, {"editor_mode": "edit"})
     return ActionResult.success(data={}, summary="Edit mode")
 
 
-@chat.function("show_editor_panel", description="Show the article text editor in Step 3.", action_type="read", event="seo.nav.changed")
+@chat.function("show_editor_panel", description="Show the article text editor in Step 3.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def show_editor_panel(ctx, params: EmptyParams) -> ActionResult:
     """Reveal the rich-text editor in Step 3."""
     await save_ui_state(ctx, {"show_editor": True})
     return ActionResult.success(data={}, summary="Editor shown")
 
 
-@chat.function("hide_editor_panel", description="Hide the article text editor in Step 3.", action_type="read", event="seo.nav.changed")
+@chat.function("hide_editor_panel", description="Hide the article text editor in Step 3.", action_type="read", event="seo.nav.changed", data_model=NavStateResponse)
 async def hide_editor_panel(ctx, params: EmptyParams) -> ActionResult:
     """Hide the rich-text editor in Step 3."""
     await save_ui_state(ctx, {"show_editor": False})
@@ -153,6 +156,7 @@ async def hide_editor_panel(ctx, params: EmptyParams) -> ActionResult:
     description="Return to the editor for the currently open content item.",
     action_type="read",
     event="seo.nav.changed",
+    data_model=NavStateResponse,
 )
 async def resume_editor(ctx, params: EmptyParams) -> ActionResult:
     """Return to the editor for the currently open article."""

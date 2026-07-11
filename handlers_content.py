@@ -7,6 +7,7 @@ from imperal_sdk.types import ActionResult  # noqa: F811
 from wpb_app import chat, get_content, update_content, delete_content, load_settings, load_ui_state, list_content, create_content, _store_list
 from api_client import generate_brief as _mos_brief, log_action, _post, start_refine_article
 from params import SaveDraftParams, UpdateStatusParams, DeleteContentParams, AiBriefParams, SaveBriefParams, PatchArticleParams, EmptyParams
+from response_models import ArticleListResponse, ArticleDetailResponse, QualityCheckResponse
 
 
 async def _resolve_id(ctx, content_id: str, keyword_hint: str = "") -> str:
@@ -295,6 +296,7 @@ async def patch_article(ctx, params: PatchArticleParams) -> ActionResult:
     ),
     action_type="read",
     event="",
+    data_model=QualityCheckResponse,
 )
 async def check_article_quality(ctx, params: AiBriefParams) -> ActionResult:
     """Script-only quality check using regex + HTML parsing on MOS server."""
@@ -351,6 +353,7 @@ async def check_article_quality(ctx, params: AiBriefParams) -> ActionResult:
         "show drafts, what have I written, articles from another device."
     ),
     action_type="read",
+    data_model=ArticleListResponse,
 )
 async def list_articles(ctx, params: EmptyParams) -> ActionResult:
     """Show all content items from MOS storage for this user."""
@@ -456,6 +459,7 @@ async def migrate_from_store(ctx, params: EmptyParams) -> ActionResult:
         "покажи что написано, покажи содержимое статьи, вывести статью в чат."
     ),
     action_type="read",
+    data_model=ArticleDetailResponse,
 )
 async def show_article(ctx, params: EmptyParams) -> ActionResult:
     """Return full article text in chat so user can copy/review it."""
