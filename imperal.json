@@ -2490,6 +2490,30 @@
       "id_projection": "",
       "params_schema": {
         "properties": {
+          "backend_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Backend Url"
+          },
+          "backend_api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Backend Api Key"
+          },
           "seranking_api_key": {
             "anyOf": [
               {

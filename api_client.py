@@ -1,13 +1,10 @@
-"""MOS server HTTP client — all external API calls go through here."""
+"""Per-user backend HTTP client — all external API calls go through here."""
 from __future__ import annotations
 
-import os
 import time
 
 from wpb_app import load_settings, gsc_ready
 
-SERVER_URL = os.environ.get("ARTICLE_WRITER_BACKEND_URL", "")
-SERVER_API_KEY = os.environ.get("ARTICLE_WRITER_BACKEND_API_KEY", "")
 TIMEOUT = 30
 TIMEOUT_PLAN = 120  # content plan: 3 parallel API calls + AI generation
 
@@ -21,8 +18,8 @@ def _normalize_backend_url(raw: str) -> str:
     return value.rstrip("/")
 
 
-def _bearer_headers() -> dict:
-    token = (SERVER_API_KEY or "").strip()
+def _bearer_headers(token: str) -> dict:
+    token = (token or "").strip()
     if not token:
         return {}
     return {"Authorization": f"Bearer {token}"}
@@ -30,8 +27,10 @@ def _bearer_headers() -> dict:
 
 async def log_action(ctx, action: str, content_id: str, duration_ms: int,
                      success: bool, error: str = "") -> None:
-    """Fire-and-forget: POST action log to MOS. Never raises."""
-    base_url = _normalize_backend_url(SERVER_URL)
+    """Fire-and-forget: POST action log to backend. Never raises."""
+    s = await load_settings(ctx)
+    base_url = _normalize_backend_url(s.get("backend_url", ""))
+    token = s.get("backend_api_key", "")
     if not base_url:
         return
     try:
@@ -45,7 +44,7 @@ async def log_action(ctx, action: str, content_id: str, duration_ms: int,
                 "error": error,
                 "timestamp": time.time(),
             },
-            headers=_bearer_headers(),
+            headers=_bearer_headers(token),
             timeout=5,
         )
     except Exception:
@@ -53,13 +52,15 @@ async def log_action(ctx, action: str, content_id: str, duration_ms: int,
 
 
 async def _post(ctx, endpoint: str, payload: dict, timeout: int = TIMEOUT) -> dict:
-    base_url = _normalize_backend_url(SERVER_URL)
+    s = await load_settings(ctx)
+    base_url = _normalize_backend_url(s.get("backend_url", ""))
+    token = s.get("backend_api_key", "")
     if not base_url:
         return {"error": "Article Writer backend URL is not configured."}
     resp = await ctx.http.post(
         f"{base_url}{endpoint}",
         json=payload,
-        headers=_bearer_headers(),
+        headers=_bearer_headers(token),
         timeout=timeout,
     )
     if not resp.ok:
@@ -72,12 +73,14 @@ async def _post(ctx, endpoint: str, payload: dict, timeout: int = TIMEOUT) -> di
 
 
 async def _get(ctx, endpoint: str, timeout: int = TIMEOUT) -> dict:
-    base_url = _normalize_backend_url(SERVER_URL)
+    s = await load_settings(ctx)
+    base_url = _normalize_backend_url(s.get("backend_url", ""))
+    token = s.get("backend_api_key", "")
     if not base_url:
         return {"error": "Article Writer backend URL is not configured."}
     resp = await ctx.http.get(
         f"{base_url}{endpoint}",
-        headers=_bearer_headers(),
+        headers=_bearer_headers(token),
         timeout=timeout,
     )
     if not resp.ok:

@@ -79,6 +79,19 @@ async def _settings_view(ctx) -> ui.UINode:
         ],
     )
 
+    # ── Backend bridge ────────────────────────────────────────────────────────
+    backend_form = ui.Form(
+        action="save_settings",
+        submit_label="Save Backend Bridge",
+        children=[
+            ui.Input(param_name="backend_url",
+                     value=s.get("backend_url", ""),
+                     placeholder="Backend URL — https://api.yourdomain.com"),
+            ui.Input(param_name="backend_api_key",
+                     placeholder=f"Backend API Key / Bearer token{' (set: ' + _masked(s.get('backend_api_key','')) + ')' if s.get('backend_api_key') else ''}"),
+        ],
+    )
+
     # ── SE Ranking ────────────────────────────────────────────────────────────
     ser_form = ui.Form(
         action="save_settings",
@@ -170,6 +183,8 @@ async def _settings_view(ctx) -> ui.UINode:
             type="info",
         ),
         blog_style_section,
+        ui.Divider(),
+        ui.Section(title="Backend Bridge (required)", collapsible=False, children=[backend_form]),
         ui.Divider(),
         ui.Section(title="Brand & Newsletter", collapsible=False, children=[brand_form]),
         ui.Divider(),

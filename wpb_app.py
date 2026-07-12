@@ -50,6 +50,8 @@ CONTENT_COL = "seo_content"
 UI_STATE_COL = "seo_ui_state"
 
 DEFAULT_SETTINGS: dict = {
+    "backend_url": "",
+    "backend_api_key": "",
     "seranking_api_key": "",
     "seranking_project_id": "",
     "seranking_domain": "",

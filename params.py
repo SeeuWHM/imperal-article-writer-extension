@@ -124,6 +124,9 @@ class UIStateModel(BaseModel):
 
 
 class SaveSettingsParams(BaseModel):
+    # Backend bridge / compat API
+    backend_url: Optional[str] = None
+    backend_api_key: Optional[str] = None
     # SE Ranking
     seranking_api_key: Optional[str] = None
     seranking_data_key: Optional[str] = None  # legacy alias accepted for migration/tests
