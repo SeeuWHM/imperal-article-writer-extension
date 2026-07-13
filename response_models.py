@@ -1,140 +1,80 @@
+"""Pydantic response models for Article Writer chat functions.
+
+Every @chat.function(action_type="read") must declare a data_model so the
+platform can validate return shapes (federal V23).
+
+CRITICAL: ArticleSummary has no content/sections field, by design — mirrors
+the backend's own apps/articles/schemas.py::ArticleSummary. list_articles
+must never be able to carry a full article body, independent of what the
+backend happens to send — see article-writer-backend/PLAN.md's token-economy
+rule. Full bodies exist only in ArticleDetail, which this extension never
+returns from a chat.function — only the panel (panels_workspace.py) reads it.
+"""
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
-class GenericPayloadResponse(BaseModel):
-    data: dict[str, Any] = Field(default_factory=dict)
+class ProjectRecord(BaseModel):
+    id: str
+    name: str = ""
+    site_url: Optional[str] = None
+    description: Optional[str] = None
+    keywords: List[str] = Field(default_factory=list)
+    useful_links: List[str] = Field(default_factory=list)
+    social_links: List[str] = Field(default_factory=list)
+    brand_voice: Optional[str] = None
 
 
-class NavStateResponse(BaseModel):
-    section: str = "plan"
-    filters: dict[str, Any] = Field(default_factory=dict)
-    selected_id: str = ""
-    editor_mode: str = "edit"
-    show_editor: bool = False
+class ProjectListResponse(BaseModel):
+    projects: List[ProjectRecord] = Field(default_factory=list)
+    count: int = 0
 
 
-class ArticleSummaryRecord(BaseModel):
-    id: str = ""
-    keyword: str = ""
-    title: str = ""
-    status: str = ""
-    type: str = "blog"
-    volume: Optional[int] = None
-    difficulty: Optional[int] = None
-    wp_post_id: Optional[int] = None
-    wp_url: Optional[str] = None
+class ArticleSummary(BaseModel):
+    """Metadata only — DELIBERATELY no content/sections field. See module docstring."""
+
+    id: str
+    project_id: str
+    title: Optional[str] = None
+    status: str = "idea"
+    target_keyword: Optional[str] = None
+    word_count: int = 0
+    seo_flags: List[str] = Field(default_factory=list)
+    model_used: Optional[str] = None
 
 
 class ArticleListResponse(BaseModel):
-    items: list[ArticleSummaryRecord] = Field(default_factory=list)
+    articles: List[ArticleSummary] = Field(default_factory=list)
     count: int = 0
 
 
-class ArticleDetailResponse(BaseModel):
-    item: dict[str, Any] = Field(default_factory=dict)
+class GenerationJobResponse(BaseModel):
+    job_id: str
+    article_id: str
+    status: str = "queued"
 
 
-class QualityCheckResponse(BaseModel):
-    content_id: str = ""
-    quality_score: Optional[int] = None
-    checks: list[dict[str, Any]] = Field(default_factory=list)
-    summary: str = ""
+class GenerationStatusResponse(BaseModel):
+    job_id: str
+    status: str
+    model: Optional[str] = None
+    tokens_used: Optional[int] = None
+    cost_estimate: Optional[float] = None
+    error: Optional[str] = None
 
 
-class DocRecord(BaseModel):
-    id: str = ""
-    name: str = ""
-    size: Optional[int] = None
-    uploaded_at: Optional[str] = None
+class PatchResult(BaseModel):
+    """Never the full body — a short preview only."""
+
+    section_id: str
+    order_index: int
+    heading: Optional[str] = None
+    preview: str
+    word_count: int = 0
+    seo_flags: List[str] = Field(default_factory=list)
 
 
-class DocsListResponse(BaseModel):
-    items: list[DocRecord] = Field(default_factory=list)
-    count: int = 0
-
-
-class TrackedKeywordRecord(BaseModel):
-    keyword: str = ""
-    position: Optional[float] = None
-    url: Optional[str] = None
-    volume: Optional[int] = None
-    difficulty: Optional[int] = None
-
-
-class TrackedKeywordsResponse(BaseModel):
-    items: list[TrackedKeywordRecord] = Field(default_factory=list)
-    count: int = 0
-
-
-class SettingsResponse(BaseModel):
-    items: list[dict[str, Any]] = Field(default_factory=list)
-
-
-class WPPostRecord(BaseModel):
-    id: int | str
-    title: str = ""
-    status: str = ""
-    url: Optional[str] = None
-
-
-class WPPostsResponse(BaseModel):
-    items: list[WPPostRecord] = Field(default_factory=list)
-    count: int = 0
-
-
-class LinkLookupResponse(BaseModel):
-    url: str = ""
-
-
-class KeywordResultRecord(BaseModel):
-    keyword: str = ""
-    volume: Optional[int] = None
-    difficulty: Optional[int] = None
-    cpc: Optional[float] = None
-    position: Optional[float] = None
-    url: Optional[str] = None
-
-
-class KeywordResultsResponse(BaseModel):
-    items: list[KeywordResultRecord] = Field(default_factory=list)
-    count: int = 0
-
-
-class GapResultRecord(BaseModel):
-    keyword: str = ""
-    volume: Optional[int] = None
-    difficulty: Optional[int] = None
-    position: Optional[float] = None
-    competitor_position: Optional[float] = None
-    cpc: Optional[float] = None
-
-
-class GapResultsResponse(BaseModel):
-    items: list[GapResultRecord] = Field(default_factory=list)
-    count: int = 0
-
-
-class RankingRecord(BaseModel):
-    keyword: str = ""
-    position: Optional[float] = None
-    change: Optional[float] = None
-    url: Optional[str] = None
-
-
-class RankingsResponse(BaseModel):
-    items: list[RankingRecord] = Field(default_factory=list)
-    count: int = 0
-
-
-class ProjectRecord(BaseModel):
-    id: int | str
-    name: str = ""
-    domain: Optional[str] = None
-
-
-class ProjectsResponse(BaseModel):
-    items: list[ProjectRecord] = Field(default_factory=list)
-    count: int = 0
+class DeletedResponse(BaseModel):
+    deleted: bool = True

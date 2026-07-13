@@ -1,7 +1,7 @@
 [project]
 name = "article-writer"
-version = "1.5.3"
-description = "Article Writer — AI-powered WordPress content creation: keyword research, rankings, article writing and one-click publishing"
+version = "2.0.0"
+description = "Article Writer — project-based SEO article writing: per-site context, AI generation with grounded self-review, panel-only editing"
 requires-python = ">=3.11"
 dependencies = ["imperal-sdk>=5.0.1"]
 
@@ -10,13 +10,10 @@ dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
 
 [tool.setuptools]
 py-modules = [
-    "main", "wpb_app", "params",
-    "api_client", "api_seranking", "api_wordpress",
-    "handlers_nav", "handlers_content", "handlers_seo", "handlers_publish", "handlers_docs",
-    "handlers_ai_write", "handlers_ai_extra", "handlers_keywords",
-    "panels_side", "panels_right", "panels_workspace", "panels_editor",
-    "panels_editor_helpers", "panels_editor_newsletter",
-    "panels_settings_view", "panels_docs", "skeleton",
+    "main", "app", "params", "response_models",
+    "api_client", "skeleton",
+    "handlers_projects", "handlers_articles", "handlers_generate",
+    "panels_side", "panels_workspace",
 ]
 
 [tool.pytest.ini_options]
