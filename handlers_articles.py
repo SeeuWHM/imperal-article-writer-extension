@@ -22,7 +22,7 @@ from app import chat
 from api_client import call_backend
 from params import (
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
-    UpdateArticleStatusParams, SaveArticleSectionParams,
+    UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
 )
 from response_models import ArticleSummary, ArticleListResponse, DeletedResponse
 
@@ -36,6 +36,7 @@ def _to_summary(a: dict) -> ArticleSummary:
     return ArticleSummary(
         id=a.get("id", ""), project_id=a.get("project_id", ""), title=a.get("title"),
         status=a.get("status", "idea"), target_keyword=a.get("target_keyword"),
+        meta_description=a.get("meta_description"),
         word_count=a.get("word_count", 0), seo_flags=seo_score.get("flags") or [],
         model_used=a.get("model_used"),
     )
@@ -119,12 +120,42 @@ async def fn_list_articles(ctx, params: ListArticlesParams) -> ActionResult:
 )
 async def fn_update_article_status(ctx, params: UpdateArticleStatusParams) -> ActionResult:
     """Move an article to a new pipeline status."""
-    data = await call_backend(ctx, "PATCH", f"/v1/articles/{params.article_id}", json={"status": params.status})
+    data = await call_backend(ctx, "PATCH", f"/v1/articles/{params.article_id}/status", json={"status": params.status})
     if "error" in data:
         return _err(data)
     summary = _to_summary(data)
     return ActionResult.success(
         data=summary, summary=f"Status set to {summary.status}.", refresh_panels=["workspace"],
+    )
+
+
+@chat.function(
+    "update_article_meta",
+    description=(
+        "Fix an article's SEO metadata — title, meta_description, and/or target_keyword — "
+        "WITHOUT touching the article body/sections. This is the only way to clear a "
+        "meta_description SEO flag (e.g. 'length outside 70-165') or correct the target "
+        "keyword after generation. Use for: исправь мета дескрипшн, fix the meta description, "
+        "update SEO title/keyword. To rewrite actual body text, use patch_article instead."
+    ),
+    action_type="write",
+    event="article-writer.article.meta_updated",
+    effects=["update:article"],
+    data_model=ArticleSummary,
+)
+async def fn_update_article_meta(ctx, params: UpdateArticleMetaParams) -> ActionResult:
+    """Partial fix for title/meta_description/target_keyword — recomputes SEO flags."""
+    fields = params.model_dump(exclude_none=True, exclude={"article_id"})
+    if not fields:
+        return ActionResult.error(
+            error="Nothing to update — provide title, meta_description, and/or target_keyword."
+        )
+    data = await call_backend(ctx, "PATCH", f"/v1/articles/{params.article_id}/meta", json=fields)
+    if "error" in data:
+        return _err(data)
+    summary = _to_summary(data)
+    return ActionResult.success(
+        data=summary, summary="SEO metadata updated.", refresh_panels=["workspace"],
     )
 
 

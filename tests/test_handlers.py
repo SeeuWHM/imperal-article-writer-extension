@@ -24,7 +24,7 @@ import api_client
 from params import (
     CreateProjectParams, UpdateProjectContextParams, ProjectIdParams,
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
-    UpdateArticleStatusParams, SaveArticleSectionParams,
+    UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
     GenerateArticleParams, GenerationJobStatusParams, PatchArticleParams,
 )
 from response_models import DeletedResponse
@@ -152,7 +152,7 @@ async def test_list_articles_never_carries_body(monkeypatch):
 @pytest.mark.asyncio
 async def test_update_article_status_success(monkeypatch):
     async def fake_call(ctx, method, path, **kw):
-        assert method == "PATCH" and path == "/v1/articles/a1"
+        assert method == "PATCH" and path == "/v1/articles/a1/status"
         assert kw["json"] == {"status": "published"}
         return {"id": "a1", "project_id": "p1", "status": "published", "word_count": 650}
 
@@ -162,6 +162,34 @@ async def test_update_article_status_success(monkeypatch):
     )
     assert result.status == "success"
     assert result.data.status == "published"
+
+
+@pytest.mark.asyncio
+async def test_update_article_meta_requires_a_field():
+    result = await handlers_articles.fn_update_article_meta(
+        _ctx(), UpdateArticleMetaParams(article_id="a1"),
+    )
+    assert result.status == "error"
+
+
+@pytest.mark.asyncio
+async def test_update_article_meta_success(monkeypatch):
+    async def fake_call(ctx, method, path, **kw):
+        assert method == "PATCH" and path == "/v1/articles/a1/meta"
+        assert kw["json"] == {"meta_description": "A tighter, on-length meta description."}
+        return {
+            "id": "a1", "project_id": "p1", "status": "review",
+            "meta_description": "A tighter, on-length meta description.",
+            "word_count": 650, "seo_score": {"flags": []},
+        }
+
+    monkeypatch.setattr(handlers_articles, "call_backend", fake_call)
+    result = await handlers_articles.fn_update_article_meta(
+        _ctx(), UpdateArticleMetaParams(article_id="a1", meta_description="A tighter, on-length meta description."),
+    )
+    assert result.status == "success"
+    assert result.data.meta_description == "A tighter, on-length meta description."
+    assert result.data.seo_flags == []
 
 
 @pytest.mark.asyncio

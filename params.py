@@ -58,6 +58,16 @@ class UpdateArticleStatusParams(BaseModel):
     status: str = Field(..., description="idea | writing | review | published")
 
 
+class UpdateArticleMetaParams(BaseModel):
+    article_id: str = Field(...)
+    title: Optional[str] = Field(default=None, max_length=500)
+    meta_description: Optional[str] = Field(
+        default=None, max_length=320,
+        description="SEO meta description — aim for 70-165 characters",
+    )
+    target_keyword: Optional[str] = Field(default=None, max_length=255)
+
+
 class GenerateArticleParams(BaseModel):
     article_id: str = Field(...)
     brief: str = Field(..., min_length=1, max_length=10000, description="What the article should cover")

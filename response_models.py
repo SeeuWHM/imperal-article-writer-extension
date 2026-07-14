@@ -40,6 +40,7 @@ class ArticleSummary(BaseModel):
     title: Optional[str] = None
     status: str = "idea"
     target_keyword: Optional[str] = None
+    meta_description: Optional[str] = None
     word_count: int = 0
     seo_flags: List[str] = Field(default_factory=list)
     model_used: Optional[str] = None

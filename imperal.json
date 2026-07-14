@@ -634,6 +634,18 @@
             "default": null,
             "title": "Target Keyword"
           },
+          "meta_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Meta Description"
+          },
           "word_count": {
             "default": 0,
             "title": "Word Count",
@@ -752,6 +764,18 @@
                 ],
                 "default": null,
                 "title": "Target Keyword"
+              },
+              "meta_description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Meta Description"
               },
               "word_count": {
                 "default": 0,
@@ -877,6 +901,18 @@
             "default": null,
             "title": "Target Keyword"
           },
+          "meta_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Meta Description"
+          },
           "word_count": {
             "default": 0,
             "title": "Word Count",
@@ -910,6 +946,158 @@
         "type": "object"
       },
       "event": "article-writer.article.status_changed",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "update_article_meta",
+      "description": "Fix an article's SEO metadata — title, meta_description, and/or target_keyword — WITHOUT touching the article body/sections. This is the only way to clear a meta_description SEO flag (e.g. 'length outside 70-165') or correct the target keyword after generation. Use for: исправь мета дескрипшн, fix the meta description, update SEO title/keyword. To rewrite actual body text, use patch_article instead.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:article"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "article_id": {
+            "title": "Article Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "meta_description": {
+            "anyOf": [
+              {
+                "maxLength": 320,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "SEO meta description — aim for 70-165 characters",
+            "title": "Meta Description"
+          },
+          "target_keyword": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Keyword"
+          }
+        },
+        "required": [
+          "article_id"
+        ],
+        "title": "UpdateArticleMetaParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "description": "Metadata only — DELIBERATELY no content/sections field. See module docstring.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "status": {
+            "default": "idea",
+            "title": "Status",
+            "type": "string"
+          },
+          "target_keyword": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Keyword"
+          },
+          "meta_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Meta Description"
+          },
+          "word_count": {
+            "default": 0,
+            "title": "Word Count",
+            "type": "integer"
+          },
+          "seo_flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Seo Flags",
+            "type": "array"
+          },
+          "model_used": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model Used"
+          }
+        },
+        "required": [
+          "id",
+          "project_id"
+        ],
+        "title": "ArticleSummary",
+        "type": "object"
+      },
+      "event": "article-writer.article.meta_updated",
       "background": false,
       "long_running": false,
       "scopes": [],
