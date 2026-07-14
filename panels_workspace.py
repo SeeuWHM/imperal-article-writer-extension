@@ -19,6 +19,7 @@ from imperal_sdk import ui
 
 from app import ext
 from api_client import call_backend
+from richtext import to_html
 
 NAV_COL = "article_writer_nav_state"
 STATUS_ORDER = ["idea", "writing", "review", "published"]
@@ -106,7 +107,7 @@ def _section_form(article_id: str, section: dict) -> ui.UINode:
     order_index = section.get("order_index", 0)
     return ui.Section(
         title=section.get("heading") or f"Section {order_index + 1}",
-        collapsible=True,
+        collapsible=False,
         children=[
             ui.Form(
                 action="save_article_section",
@@ -114,7 +115,7 @@ def _section_form(article_id: str, section: dict) -> ui.UINode:
                 defaults={"article_id": article_id, "order_index": order_index},
                 children=[
                     ui.Input(param_name="heading", value=section.get("heading") or ""),
-                    ui.TextArea(param_name="content", value=section.get("content") or "", rows=10),
+                    ui.RichEditor(param_name="content", content=to_html(section.get("content") or "")),
                 ],
             ),
         ],

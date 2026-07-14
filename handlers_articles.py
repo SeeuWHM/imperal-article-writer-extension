@@ -20,6 +20,7 @@ from imperal_sdk.types import ActionResult
 
 from app import chat
 from api_client import call_backend
+from richtext import from_html
 from params import (
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
     UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
@@ -173,8 +174,14 @@ async def fn_update_article_meta(ctx, params: UpdateArticleMetaParams) -> Action
     data_model=DeletedResponse,
 )
 async def fn_save_article_section(ctx, params: SaveArticleSectionParams) -> ActionResult:
-    """Overwrite one section's heading/content verbatim — no AI involved."""
+    """Overwrite one section's heading/content verbatim — no AI involved.
+
+    content may arrive as HTML from the panel's RichEditor; from_html() is a
+    no-op on plain text, so this is safe regardless of caller (panel or chat).
+    """
     fields = params.model_dump(exclude_none=True, exclude={"article_id", "order_index"})
+    if "content" in fields:
+        fields["content"] = from_html(fields["content"])
     if not fields:
         return ActionResult.error(error="Nothing to save — provide heading and/or content.")
     data = await call_backend(

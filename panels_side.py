@@ -38,7 +38,7 @@ async def sidebar_panel(ctx):
                 ui.ListItem(
                     id=p["id"], title=p.get("name") or "(untitled)",
                     subtitle=p.get("site_url") or "",
-                    meta=f"{len(p.get('keywords') or [])} kw",
+                    meta=f"{len(p.get('keywords') or [])} kwds",
                     on_click=ui.Call("__panel__workspace", view="articles", project_id=p["id"]),
                 )
                 for p in projects
