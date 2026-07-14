@@ -1,9 +1,9 @@
 """Plain-text/lightweight-markdown <-> HTML conversion for the panel's
 RichEditor (TipTap — its `content` prop is an HTML string). The backend
-stores/scores plain text with light markdown (**bold**, *em*, "- " bullets —
-exactly what the generation pipeline's prompts produce), so every read goes
-through to_html() and every save goes through from_html() to keep that
-contract unchanged end to end.
+stores/scores plain text with light markdown (**bold**, *em*, "- " bullets,
+"[text](url)" links — exactly what the generation pipeline's prompts
+produce), so every read goes through to_html() and every save goes through
+from_html() to keep that contract unchanged end to end.
 """
 from __future__ import annotations
 
@@ -11,30 +11,53 @@ import re
 
 _BOLD = re.compile(r"\*\*(.+?)\*\*")
 _ITALIC = re.compile(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)")
+_LINK_MD = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 _HTML_STRONG = re.compile(r"<(?:strong|b)>(.*?)</(?:strong|b)>", re.DOTALL)
 _HTML_EM = re.compile(r"<(?:em|i)>(.*?)</(?:em|i)>", re.DOTALL)
+_HTML_LINK = re.compile(r'<a\s+[^>]*href="([^"]*)"[^>]*>(.*?)</a>', re.DOTALL)
 _HTML_LIST = re.compile(r"<(ul|ol)>(.*?)</\1>", re.DOTALL)
 _HTML_LI = re.compile(r"<li>(.*?)</li>", re.DOTALL)
 _HTML_TAG = re.compile(r"<[^>]+>")
 _HTML_BLOCK = re.compile(r"<p>.*?</p>|<ul>.*?</ul>|<ol>.*?</ol>", re.DOTALL)
-_HTML_HEADING = re.compile(r"<h[23]>(.*?)</h[23]>", re.DOTALL)
-_HTML_HEADING_SPLIT = re.compile(r"(<h[23]>.*?</h[23]>)", re.DOTALL)
+# h1/h2/h3 all count as section boundaries — the editor's toolbar offers all
+# three and there's no reason to silently swallow an H1/H3 heading into the
+# previous section's body just because a section boundary was normalized to
+# h2 on the way in. Heading *level* itself isn't stored (schema only has a
+# plain-text `heading` column) — sections_to_html always re-emits h2.
+_HTML_HEADING = re.compile(r"<h[123]>(.*?)</h[123]>", re.DOTALL)
+_HTML_HEADING_SPLIT = re.compile(r"(<h[123]>.*?</h[123]>)", re.DOTALL)
 
 
 def _inline_to_html(text: str) -> str:
+    text = _LINK_MD.sub(r'<a href="\2">\1</a>', text)
     text = _BOLD.sub(r"<strong>\1</strong>", text)
     text = _ITALIC.sub(r"<em>\1</em>", text)
     return text
 
 
 def to_html(text: str) -> str:
-    """Section plain text -> HTML for RichEditor display."""
+    """Section plain text -> HTML for RichEditor display.
+
+    Adjacent all-bullet blocks get merged into ONE <ul> even when the source
+    put a blank line between each "- " item (each would otherwise split()
+    into its own single-item paragraph and render as a separate one-item
+    list) — genuine prose paragraphs still stay split on blank lines.
+    """
     if not text or not text.strip():
         return ""
-    blocks = []
+
+    grouped: list[tuple[bool, list[str]]] = []
     for para in re.split(r"\n\s*\n", text.strip()):
         lines = [ln.strip() for ln in para.split("\n") if ln.strip()]
-        if lines and all(ln.startswith(("- ", "* ")) for ln in lines):
+        is_bullets = bool(lines) and all(ln.startswith(("- ", "* ")) for ln in lines)
+        if is_bullets and grouped and grouped[-1][0]:
+            grouped[-1][1].extend(lines)
+        else:
+            grouped.append((is_bullets, lines))
+
+    blocks = []
+    for is_bullets, lines in grouped:
+        if is_bullets:
             items = "".join(f"<li>{_inline_to_html(ln[2:])}</li>" for ln in lines)
             blocks.append(f"<ul>{items}</ul>")
         else:
@@ -70,7 +93,8 @@ def from_html(html: str) -> str:
     """
     if not html or not html.strip():
         return ""
-    text = _HTML_STRONG.sub(r"**\1**", html)
+    text = _HTML_LINK.sub(lambda m: f"[{_HTML_TAG.sub('', m.group(2))}]({m.group(1)})", html)
+    text = _HTML_STRONG.sub(r"**\1**", text)
     text = _HTML_EM.sub(r"*\1*", text)
 
     blocks = _HTML_BLOCK.findall(text)
@@ -97,7 +121,7 @@ def sections_to_html(sections: list[dict]) -> str:
 
 def html_to_sections(html: str) -> list[dict]:
     """Split ONE merged document back into {heading, content} sections at
-    <h2>/<h3> boundaries — the inverse of sections_to_html(). Content typed
+    <h1>/<h2>/<h3> boundaries — the inverse of sections_to_html(). Content typed
     before the first heading (if any) becomes a heading-less first section;
     this is how a genuinely free-edited document (headings added/removed/
     reordered by the user) round-trips instead of only ever matching the

@@ -11,13 +11,18 @@ from imperal_sdk import ui
 
 from app import ext
 from api_client import call_backend
+from navstate import load_nav
 
 
-def _project_section(p: dict) -> ui.UINode:
-    """Collapsed by default — expand to see the project's full context
-    (keywords, description) without leaving the sidebar."""
+def _active_project_detail(p: dict) -> ui.UINode:
+    """Full context (keywords, description) — shown ONLY for the project
+    currently open in the center panel. Every other project is just a
+    compact clickable row (_project_row) — no point showing every project's
+    keyword list when only one is actually being worked on."""
     keywords = p.get("keywords") or []
-    children = []
+    children = [
+        ui.Header(text=p.get("name") or "(untitled)", level=5),
+    ]
     if p.get("site_url"):
         children.append(ui.Text(content=p["site_url"], variant="caption"))
     if p.get("description"):
@@ -26,17 +31,24 @@ def _project_section(p: dict) -> ui.UINode:
         ui.Stack(direction="h", gap=1, children=[ui.Badge(label=k, color="blue") for k in keywords])
         if keywords else ui.Text(content="No keywords yet.", variant="caption")
     )
-    children.append(
-        ui.Button(label="Open articles →", size="sm",
-                  on_click=ui.Call("__panel__workspace", view="articles", project_id=p["id"]))
+    return ui.Stack(gap=1, children=children)
+
+
+def _project_row(p: dict) -> ui.UINode:
+    """Compact row for every project that ISN'T the one currently open."""
+    return ui.ListItem(
+        id=p["id"], title=p.get("name") or "(untitled)", subtitle=p.get("site_url") or "",
+        on_click=ui.Call("__panel__workspace", view="articles", project_id=p["id"]),
     )
-    return ui.Section(title=p.get("name") or "(untitled)", collapsible=True, children=children)
 
 
 @ext.panel("sidebar", slot="left", title="Article Writer", icon="FileText",
            default_width=260,
            refresh="on_event:article-writer.project.created,article-writer.project.updated,article-writer.project.deleted")
 async def sidebar_panel(ctx):
+    nav = await load_nav(ctx)
+    active_project_id = nav.get("project_id") or ""
+
     data = await call_backend(ctx, "GET", "/v1/projects", params={"limit": 100, "offset": 0})
     projects = data.get("data") if isinstance(data.get("data"), list) else []
     projects = projects or []
@@ -52,10 +64,14 @@ async def sidebar_panel(ctx):
             ui.Text(content="No projects yet — create your first one below.", variant="caption"),
         ]
     else:
-        body = [
-            ui.Header(text="Article Writer", level=4),
-            *[_project_section(p) for p in projects],
-        ]
+        active = next((p for p in projects if p["id"] == active_project_id), None)
+        others = [p for p in projects if p["id"] != active_project_id]
+        body = [ui.Header(text="Article Writer", level=4)]
+        if active:
+            body.append(_active_project_detail(active))
+            if others:
+                body.append(ui.Divider())
+        body.extend(_project_row(p) for p in others)
 
     new_project_form = ui.Form(
         action="create_project",

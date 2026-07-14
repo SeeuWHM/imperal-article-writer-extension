@@ -20,33 +20,10 @@ from imperal_sdk import ui
 from app import ext
 from api_client import call_backend
 from richtext import sections_to_html
+from navstate import load_nav, save_nav
 
-NAV_COL = "article_writer_nav_state"
 STATUS_ORDER = ["idea", "writing", "review", "published"]
 STATUS_COLOR = {"idea": "gray", "writing": "blue", "review": "yellow", "published": "green"}
-
-
-async def _load_nav(ctx) -> dict:
-    try:
-        page = await ctx.store.query(NAV_COL, limit=1)
-        docs = getattr(page, "data", None) or []
-        if docs and isinstance(getattr(docs[0], "data", None), dict):
-            return docs[0].data
-    except Exception:
-        pass
-    return {}
-
-
-async def _save_nav(ctx, values: dict) -> None:
-    try:
-        page = await ctx.store.query(NAV_COL, limit=1)
-        docs = getattr(page, "data", None) or []
-        if docs:
-            await ctx.store.update(NAV_COL, docs[0].id, values)
-        else:
-            await ctx.store.create(NAV_COL, values)
-    except Exception:
-        pass  # nav-state persistence is a convenience, never load-bearing
 
 
 def _back_button(project_id: str) -> ui.UINode:
@@ -181,7 +158,12 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
     delete_btn = ui.Button(label="Delete article", variant="danger", size="sm",
                             on_click=ui.Call("delete_article", article_id=article_id))
 
-    return ui.Stack(children=[header, status_form, ui.Divider(), body, ui.Divider(), delete_btn])
+    # Delete sits right under the header, not after the document body — a
+    # destructive control shouldn't be buried past however many thousand
+    # words the article has, mixed in with what's being written/edited.
+    return ui.Stack(children=[
+        header, delete_btn, ui.Divider(), status_form, ui.Divider(), body,
+    ])
 
 
 @ext.panel("workspace", slot="center", title="Article Writer", icon="FileText",
@@ -190,12 +172,12 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
                    "article-writer.article.deleted,article-writer.article.generation_started,"
                    "article-writer.project.deleted")
 async def workspace_panel(ctx, view: str = "", project_id: str = "", article_id: str = ""):
-    nav = await _load_nav(ctx)
+    nav = await load_nav(ctx)
     view = view or nav.get("view") or "articles"
     project_id = project_id or nav.get("project_id") or ""
     article_id = article_id or nav.get("article_id") or ""
 
-    await _save_nav(ctx, {"view": view, "project_id": project_id, "article_id": article_id})
+    await save_nav(ctx, {"view": view, "project_id": project_id, "article_id": article_id})
 
     if view == "article":
         return await _render_article_view(ctx, project_id, article_id)

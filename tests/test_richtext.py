@@ -93,3 +93,49 @@ def test_sections_round_trip():
         {"heading": "Conclusion", "content": "Closing thought with **emphasis**."},
     ]
     assert html_to_sections(sections_to_html(sections)) == sections
+
+
+def test_to_html_converts_markdown_links():
+    assert to_html("See [our pricing page](https://example.com/pricing) for details.") == (
+        '<p>See <a href="https://example.com/pricing">our pricing page</a> for details.</p>'
+    )
+
+
+def test_from_html_reverses_links():
+    assert from_html('<p>See <a href="https://example.com/pricing">our pricing page</a> for details.</p>') == (
+        "See [our pricing page](https://example.com/pricing) for details."
+    )
+
+
+def test_link_round_trip():
+    original = "Read the [full guide](https://example.com/guide) before you start."
+    assert from_html(to_html(original)) == original
+
+
+def test_to_html_merges_bullets_separated_by_blank_lines():
+    """The draft pipeline sometimes puts a blank line between each '- ' item —
+    real content seen in production. Each one must NOT become its own
+    single-item <ul>; they belong in one list."""
+    text = "- WooCommerce and online stores.\n\n- High-traffic sites.\n\n- Simultaneous visitors."
+    assert to_html(text) == (
+        "<ul><li>WooCommerce and online stores.</li>"
+        "<li>High-traffic sites.</li>"
+        "<li>Simultaneous visitors.</li></ul>"
+    )
+
+
+def test_to_html_still_splits_genuine_paragraphs_around_a_list():
+    text = "Intro paragraph.\n\n- one\n\n- two\n\nClosing paragraph."
+    assert to_html(text) == (
+        "<p>Intro paragraph.</p><ul><li>one</li><li>two</li></ul><p>Closing paragraph.</p>"
+    )
+
+
+def test_html_to_sections_accepts_h1_and_h3_as_boundaries():
+    """The editor's toolbar offers H1/H2/H3 — any of them must start a new
+    section, not just H2 (which is only what sections_to_html re-emits)."""
+    merged = "<h1>Big Heading</h1><p>Body one.</p><h3>Small heading</h3><p>Body two.</p>"
+    assert html_to_sections(merged) == [
+        {"heading": "Big Heading", "content": "Body one."},
+        {"heading": "Small heading", "content": "Body two."},
+    ]

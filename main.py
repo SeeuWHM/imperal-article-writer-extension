@@ -8,7 +8,7 @@ _dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _dir)
 
 for _m in list(sys.modules):
-    if _m in ("app", "api_client", "params", "response_models", "richtext", "skeleton",
+    if _m in ("app", "api_client", "params", "response_models", "richtext", "navstate", "skeleton",
               "handlers_projects", "handlers_articles", "handlers_generate",
               "panels_side", "panels_workspace"):
         del sys.modules[_m]
