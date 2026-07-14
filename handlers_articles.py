@@ -17,6 +17,10 @@ deliberately bypass the whole outline/draft/grounding/judge pipeline:
     remove/reorder sections just by editing headings.
 Their descriptions steer Webbee toward generate_article / patch_article
 (handlers_generate.py) for anything that should actually be *written*.
+
+export_article_text is the one function that DOES return a full body — see
+response_models.ArticleFullText's docstring for why that's a deliberate,
+narrow exception rather than a hole in the token-economy guarantee.
 """
 # No `from __future__ import annotations` — see params.py for why.
 
@@ -31,7 +35,7 @@ from params import (
     UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
     SaveFullArticleParams,
 )
-from response_models import ArticleSummary, ArticleListResponse, DeletedResponse
+from response_models import ArticleSummary, ArticleListResponse, DeletedResponse, ArticleFullText
 
 
 def _err(data: dict) -> ActionResult:
@@ -243,3 +247,35 @@ async def fn_delete_article(ctx, params: ArticleIdParams) -> ActionResult:
     return ActionResult.success(
         data=DeletedResponse(), summary="Article deleted.", refresh_panels=["workspace"],
     )
+
+
+@chat.function(
+    "export_article_text",
+    description=(
+        "Get the FULL article text (title + body, one plain-text document) so it can be handed "
+        "to another extension or the user — sending it by email, saving it to a note, pasting it "
+        "elsewhere. ONLY call this when the user explicitly asks to send/export/copy the article "
+        "somewhere. Never call this for routine status checks, listing, or quality review — use "
+        "list_articles / check_generation_status for those, which stay cheap on purpose."
+    ),
+    action_type="read",
+    data_model=ArticleFullText,
+)
+async def fn_export_article_text(ctx, params: ArticleIdParams) -> ActionResult:
+    """The one deliberate exception to 'never return body to chat' — explicit export only."""
+    data = await call_backend(ctx, "GET", f"/v1/articles/{params.article_id}")
+    if "error" in data:
+        return _err(data)
+    sections = data.get("sections") or []
+    parts = []
+    for s in sections:
+        if s.get("heading"):
+            parts.append(s["heading"])
+        if s.get("content"):
+            parts.append(s["content"])
+    text = "\n\n".join(parts)
+    result = ArticleFullText(
+        id=data.get("id", params.article_id), title=data.get("title"),
+        meta_description=data.get("meta_description"), text=text,
+    )
+    return ActionResult.success(data=result, summary=f"Exported {len(text.split())} word(s).")

@@ -9,6 +9,15 @@ must never be able to carry a full article body, independent of what the
 backend happens to send — see article-writer-backend/PLAN.md's token-economy
 rule. Full bodies exist only in ArticleDetail, which this extension never
 returns from a chat.function — only the panel (panels_workspace.py) reads it.
+
+ArticleFullText is the ONE deliberate, explicit exception: cross-extension
+handoffs (email the article, save it to a note, paste it elsewhere) are
+things only Webbee can do — the panel can't call another extension's tools —
+so Webbee needs a real, honest way to read the body when the user explicitly
+asks for one of those, rather than inventing placeholder text because every
+other function here structurally can't carry a body. Gated by description +
+by being its own single-purpose function, not by being reachable from
+list_articles/check_generation_status.
 """
 from __future__ import annotations
 
@@ -79,3 +88,14 @@ class PatchResult(BaseModel):
 
 class DeletedResponse(BaseModel):
     deleted: bool = True
+
+
+class ArticleFullText(BaseModel):
+    """The one deliberate exception to 'never return body to chat' — see
+    module docstring. Only export_article_text (handlers_articles.py)
+    constructs this."""
+
+    id: str
+    title: Optional[str] = None
+    meta_description: Optional[str] = None
+    text: str

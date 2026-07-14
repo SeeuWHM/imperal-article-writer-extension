@@ -1261,6 +1261,76 @@
       "owner_chat_tool": "article_writer"
     },
     {
+      "name": "export_article_text",
+      "description": "Get the FULL article text (title + body, one plain-text document) so it can be handed to another extension or the user — sending it by email, saving it to a note, pasting it elsewhere. ONLY call this when the user explicitly asks to send/export/copy the article somewhere. Never call this for routine status checks, listing, or quality review — use list_articles / check_generation_status for those, which stay cheap on purpose.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "article_id": {
+            "description": "Article ID from list_articles",
+            "title": "Article Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "article_id"
+        ],
+        "title": "ArticleIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "description": "The one deliberate exception to 'never return body to chat' — see\nmodule docstring. Only export_article_text (handlers_articles.py)\nconstructs this.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "meta_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Meta Description"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ],
+        "title": "ArticleFullText",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
       "name": "generate_article",
       "description": "Start writing an article's first draft using the project's context plus a brief and any real source facts (from web search or other extensions) it must be grounded in. Runs in the background — call check_generation_status with the returned job_id to see when it's done (status lands on 'review'). Use for: напиши статью, сгенерируй статью, write the article, draft this article.",
       "action_type": "write",
