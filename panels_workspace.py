@@ -57,7 +57,7 @@ async def _render_articles_view(ctx, project_id: str) -> ui.UINode:
     if not project_id:
         return ui.Empty(message="Pick a project on the left, or create one, to see its articles.")
 
-    data = await call_backend(ctx, "GET", "/v1/articles", params={"project_id": project_id, "limit": 200, "offset": 0})
+    data = await call_backend(ctx, "GET", "/v1/articles", params={"project_id": project_id, "limit": 100, "offset": 0})
     if "error" in data:
         return ui.Alert(message=data["error"], type="error")
     articles = data.get("data") if isinstance(data.get("data"), list) else []
