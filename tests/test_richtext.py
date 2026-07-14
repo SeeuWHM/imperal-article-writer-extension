@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from richtext import to_html, from_html
+from richtext import to_html, from_html, sections_to_html, html_to_sections
 
 
 def test_to_html_wraps_paragraphs():
@@ -53,3 +53,43 @@ def test_from_html_is_noop_on_plain_text():
 def test_round_trip_preserves_meaning():
     original = "Intro paragraph with **bold** text.\n\n- bullet one\n- bullet two\n\nClosing paragraph."
     assert from_html(to_html(original)) == original
+
+
+def test_sections_to_html_merges_headings_and_bodies():
+    sections = [
+        {"heading": "Intro", "content": "First paragraph."},
+        {"heading": "Details", "content": "Second paragraph with **bold**."},
+    ]
+    assert sections_to_html(sections) == (
+        "<h2>Intro</h2><p>First paragraph.</p>"
+        "<h2>Details</h2><p>Second paragraph with <strong>bold</strong>.</p>"
+    )
+
+
+def test_html_to_sections_splits_on_headings():
+    merged = "<h2>Intro</h2><p>First paragraph.</p><h2>Details</h2><p>Second paragraph.</p>"
+    assert html_to_sections(merged) == [
+        {"heading": "Intro", "content": "First paragraph."},
+        {"heading": "Details", "content": "Second paragraph."},
+    ]
+
+
+def test_html_to_sections_handles_leading_content_with_no_heading():
+    merged = "<p>No heading yet.</p><h2>Real section</h2><p>Body.</p>"
+    assert html_to_sections(merged) == [
+        {"heading": None, "content": "No heading yet."},
+        {"heading": "Real section", "content": "Body."},
+    ]
+
+
+def test_html_to_sections_empty():
+    assert html_to_sections("") == []
+    assert html_to_sections("   ") == []
+
+
+def test_sections_round_trip():
+    sections = [
+        {"heading": "Intro", "content": "Opening line.\n\n- point one\n- point two"},
+        {"heading": "Conclusion", "content": "Closing thought with **emphasis**."},
+    ]
+    assert html_to_sections(sections_to_html(sections)) == sections

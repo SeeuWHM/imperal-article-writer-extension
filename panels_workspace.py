@@ -19,7 +19,7 @@ from imperal_sdk import ui
 
 from app import ext
 from api_client import call_backend
-from richtext import to_html
+from richtext import sections_to_html
 
 NAV_COL = "article_writer_nav_state"
 STATUS_ORDER = ["idea", "writing", "review", "published"]
@@ -103,21 +103,17 @@ async def _render_articles_view(ctx, project_id: str) -> ui.UINode:
     ])
 
 
-def _section_form(article_id: str, section: dict) -> ui.UINode:
-    order_index = section.get("order_index", 0)
-    return ui.Section(
-        title=section.get("heading") or f"Section {order_index + 1}",
-        collapsible=False,
+def _article_editor(article_id: str, sections: list[dict]) -> ui.UINode:
+    """One seamless editable document — headings are real <h2>s inside the
+    same RichEditor, not separate boxes. Saving splits it back into sections
+    at heading boundaries (richtext.html_to_sections), so adding/removing/
+    reordering a heading here is how sections get added/removed/reordered."""
+    return ui.Form(
+        action="save_full_article",
+        submit_label="Save article",
+        defaults={"article_id": article_id},
         children=[
-            ui.Form(
-                action="save_article_section",
-                submit_label="Save section",
-                defaults={"article_id": article_id, "order_index": order_index},
-                children=[
-                    ui.Input(param_name="heading", value=section.get("heading") or ""),
-                    ui.RichEditor(param_name="content", content=to_html(section.get("content") or "")),
-                ],
-            ),
+            ui.RichEditor(param_name="content_html", content=sections_to_html(sections)),
         ],
     )
 
@@ -179,7 +175,7 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
         body = ui.Stack(children=[
             patch_form,
             ui.Divider(),
-            *[_section_form(article_id, s) for s in sections],
+            _article_editor(article_id, sections),
         ])
 
     delete_btn = ui.Button(label="Delete article", variant="danger", size="sm",

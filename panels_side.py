@@ -13,6 +13,26 @@ from app import ext
 from api_client import call_backend
 
 
+def _project_section(p: dict) -> ui.UINode:
+    """Collapsed by default — expand to see the project's full context
+    (keywords, description) without leaving the sidebar."""
+    keywords = p.get("keywords") or []
+    children = []
+    if p.get("site_url"):
+        children.append(ui.Text(content=p["site_url"], variant="caption"))
+    if p.get("description"):
+        children.append(ui.Text(content=p["description"], variant="caption"))
+    children.append(
+        ui.Stack(direction="h", gap=1, children=[ui.Badge(label=k, color="blue") for k in keywords])
+        if keywords else ui.Text(content="No keywords yet.", variant="caption")
+    )
+    children.append(
+        ui.Button(label="Open articles →", size="sm",
+                  on_click=ui.Call("__panel__workspace", view="articles", project_id=p["id"]))
+    )
+    return ui.Section(title=p.get("name") or "(untitled)", collapsible=True, children=children)
+
+
 @ext.panel("sidebar", slot="left", title="Article Writer", icon="FileText",
            default_width=260,
            refresh="on_event:article-writer.project.created,article-writer.project.updated,article-writer.project.deleted")
@@ -34,15 +54,7 @@ async def sidebar_panel(ctx):
     else:
         body = [
             ui.Header(text="Article Writer", level=4),
-            ui.List(items=[
-                ui.ListItem(
-                    id=p["id"], title=p.get("name") or "(untitled)",
-                    subtitle=p.get("site_url") or "",
-                    meta=f"{len(p.get('keywords') or [])} kwds",
-                    on_click=ui.Call("__panel__workspace", view="articles", project_id=p["id"]),
-                )
-                for p in projects
-            ]),
+            *[_project_section(p) for p in projects],
         ]
 
     new_project_form = ui.Form(

@@ -94,3 +94,10 @@ class SaveArticleSectionParams(BaseModel):
     order_index: int = Field(..., ge=0)
     heading: Optional[str] = Field(default=None, max_length=500)
     content: Optional[str] = Field(default=None, max_length=200000)
+
+
+class SaveFullArticleParams(BaseModel):
+    """PANEL-ONLY: the whole merged document from the single-window editor —
+    not something Webbee should ever construct from chat."""
+    article_id: str = Field(...)
+    content_html: str = Field(default="", max_length=400000)

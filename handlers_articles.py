@@ -5,12 +5,17 @@ Full article bodies are read/edited exclusively in the panel
 zero LLM tokens regardless of corpus size. None of the functions here ever
 return a full body — see response_models.ArticleSummary's docstring.
 
-save_article_section is the one exception that touches content: it's the
-raw manual-overwrite path the panel's "Save" button needs (a user typing
-directly into the editor, no AI involved — the content in the request is
-whatever the human typed, not something an LLM produced). It deliberately
-bypasses the whole outline/draft/grounding/judge pipeline, so its
-description steers Webbee toward generate_article / patch_article
+save_article_section and save_full_article are the two exceptions that touch
+content — both are raw manual-overwrite paths, no AI involved (content is
+whatever the human typed, not something an LLM produced), and both
+deliberately bypass the whole outline/draft/grounding/judge pipeline:
+  - save_article_section: one section by exact order_index — usable from
+    chat when a user pastes/dictates verbatim text.
+  - save_full_article: PANEL-ONLY — the single merged-editor's Save button.
+    Splits the whole document back into sections at heading boundaries
+    (richtext.html_to_sections), so it's the one place a user can add/
+    remove/reorder sections just by editing headings.
+Their descriptions steer Webbee toward generate_article / patch_article
 (handlers_generate.py) for anything that should actually be *written*.
 """
 # No `from __future__ import annotations` — see params.py for why.
@@ -20,10 +25,11 @@ from imperal_sdk.types import ActionResult
 
 from app import chat
 from api_client import call_backend
-from richtext import from_html
+from richtext import from_html, html_to_sections
 from params import (
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
     UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
+    SaveFullArticleParams,
 )
 from response_models import ArticleSummary, ArticleListResponse, DeletedResponse
 
@@ -191,6 +197,33 @@ async def fn_save_article_section(ctx, params: SaveArticleSectionParams) -> Acti
         return _err(data)
     return ActionResult.success(
         data=DeletedResponse(deleted=False), summary="Section saved.", refresh_panels=["workspace"],
+    )
+
+
+@chat.function(
+    "save_full_article",
+    description=(
+        "PANEL-ONLY: replace the entire article body from the panel's single merged editor. "
+        "Splits the submitted document into sections at heading boundaries — this is the one "
+        "path that lets a section be added/removed/reordered by editing headings directly. "
+        "Not for chat use — Webbee should use generate_article or patch_article to write content."
+    ),
+    action_type="write",
+    event="article-writer.article.section_saved",
+    effects=["update:article"],
+    data_model=DeletedResponse,
+)
+async def fn_save_full_article(ctx, params: SaveFullArticleParams) -> ActionResult:
+    """Panel's single-editor Save — split the merged HTML back into sections."""
+    sections = html_to_sections(params.content_html)
+    data = await call_backend(
+        ctx, "PUT", f"/v1/articles/{params.article_id}/sections",
+        json={"sections": sections},
+    )
+    if "error" in data:
+        return _err(data)
+    return ActionResult.success(
+        data=DeletedResponse(deleted=False), summary="Article saved.", refresh_panels=["workspace"],
     )
 
 

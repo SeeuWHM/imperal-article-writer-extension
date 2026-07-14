@@ -62,6 +62,8 @@ async def call_backend(ctx, method: str, path: str, params: dict | None = None,
         resp = await ctx.http.post(url, params=params or {}, json=json or {}, headers=headers, timeout=timeout)
     elif method.upper() == "PATCH":
         resp = await ctx.http.patch(url, params=params or {}, json=json or {}, headers=headers, timeout=timeout)
+    elif method.upper() == "PUT":
+        resp = await ctx.http.put(url, params=params or {}, json=json or {}, headers=headers, timeout=timeout)
     elif method.upper() == "DELETE":
         resp = await ctx.http.delete(url, params=params or {}, headers=headers, timeout=timeout)
     else:

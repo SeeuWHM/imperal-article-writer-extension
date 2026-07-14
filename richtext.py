@@ -17,6 +17,8 @@ _HTML_LIST = re.compile(r"<(ul|ol)>(.*?)</\1>", re.DOTALL)
 _HTML_LI = re.compile(r"<li>(.*?)</li>", re.DOTALL)
 _HTML_TAG = re.compile(r"<[^>]+>")
 _HTML_BLOCK = re.compile(r"<p>.*?</p>|<ul>.*?</ul>|<ol>.*?</ol>", re.DOTALL)
+_HTML_HEADING = re.compile(r"<h[23]>(.*?)</h[23]>", re.DOTALL)
+_HTML_HEADING_SPLIT = re.compile(r"(<h[23]>.*?</h[23]>)", re.DOTALL)
 
 
 def _inline_to_html(text: str) -> str:
@@ -78,3 +80,46 @@ def from_html(html: str) -> str:
 
     converted = [_block_to_text(b) for b in blocks]
     return _unescape("\n\n".join(b for b in converted if b))
+
+
+def sections_to_html(sections: list[dict]) -> str:
+    """Merge an article's sections into ONE HTML document — the panel's
+    single-window editor. Each section's heading becomes a real <h2>, so
+    TipTap's own heading formatting is what carries section boundaries."""
+    parts = []
+    for section in sections:
+        heading = (section.get("heading") or "").strip()
+        if heading:
+            parts.append(f"<h2>{heading}</h2>")
+        parts.append(to_html(section.get("content") or ""))
+    return "".join(parts)
+
+
+def html_to_sections(html: str) -> list[dict]:
+    """Split ONE merged document back into {heading, content} sections at
+    <h2>/<h3> boundaries — the inverse of sections_to_html(). Content typed
+    before the first heading (if any) becomes a heading-less first section;
+    this is how a genuinely free-edited document (headings added/removed/
+    reordered by the user) round-trips instead of only ever matching the
+    original section count."""
+    if not html or not html.strip():
+        return []
+
+    parts = _HTML_HEADING_SPLIT.split(html)
+    sections: list[dict] = []
+    heading: str | None = None
+    body = ""
+    for part in parts:
+        if not part or not part.strip():
+            continue
+        match = _HTML_HEADING.match(part)
+        if match:
+            if heading is not None or body.strip():
+                sections.append({"heading": heading, "content": from_html(body)})
+            heading = _unescape(_HTML_TAG.sub("", match.group(1))).strip()
+            body = ""
+        else:
+            body += part
+    if heading is not None or body.strip():
+        sections.append({"heading": heading, "content": from_html(body)})
+    return sections

@@ -1175,6 +1175,52 @@
       "owner_chat_tool": "article_writer"
     },
     {
+      "name": "save_full_article",
+      "description": "PANEL-ONLY: replace the entire article body from the panel's single merged editor. Splits the submitted document into sections at heading boundaries — this is the one path that lets a section be added/removed/reordered by editing headings directly. Not for chat use — Webbee should use generate_article or patch_article to write content.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:article"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "description": "PANEL-ONLY: the whole merged document from the single-window editor —\nnot something Webbee should ever construct from chat.",
+        "properties": {
+          "article_id": {
+            "title": "Article Id",
+            "type": "string"
+          },
+          "content_html": {
+            "default": "",
+            "maxLength": 400000,
+            "title": "Content Html",
+            "type": "string"
+          }
+        },
+        "required": [
+          "article_id"
+        ],
+        "title": "SaveFullArticleParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "deleted": {
+            "default": true,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "title": "DeletedResponse",
+        "type": "object"
+      },
+      "event": "article-writer.article.section_saved",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
       "name": "delete_article",
       "description": "Permanently delete an article. Use for: удали статью, delete this article.",
       "action_type": "destructive",
