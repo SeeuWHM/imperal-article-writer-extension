@@ -63,21 +63,10 @@ async def _render_articles_view(ctx, project_id: str) -> ui.UINode:
             ] if items else [ui.Text(content="—", variant="caption")]),
         ]))
 
-    new_article_form = ui.Form(
-        action="create_article",
-        submit_label="+ New article",
-        defaults={"project_id": project_id},
-        children=[
-            ui.Input(param_name="title", placeholder="Title (optional)"),
-            ui.Input(param_name="target_keyword", placeholder="Target keyword (optional)"),
-        ],
-    )
-
-    return ui.Stack(children=[
-        ui.Grid(columns=len(STATUS_ORDER), gap=3, children=columns),
-        ui.Divider(),
-        new_article_form,
-    ])
+    # No "+ New article" form here — Webbee creates articles via chat
+    # (create_article); this panel's job is navigation + reading/editing,
+    # not duplicating actions Webbee already owns.
+    return ui.Grid(columns=len(STATUS_ORDER), gap=3, children=columns)
 
 
 def _article_editor(article_id: str, sections: list[dict]) -> ui.UINode:
@@ -141,19 +130,10 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
             ],
         )
     else:
-        patch_form = ui.Form(
-            action="patch_article", submit_label="Patch with AI",
-            defaults={"article_id": article_id},
-            children=[
-                ui.Input(param_name="instruction", placeholder="e.g. rewrite the intro to be punchier"),
-                ui.Input(param_name="section_hint", placeholder="Optional heading/keyword hint"),
-            ],
-        )
-        body = ui.Stack(children=[
-            patch_form,
-            ui.Divider(),
-            _article_editor(article_id, sections),
-        ])
+        # No "Patch with AI" form — that's Webbee's job via chat
+        # (patch_article); this panel edits directly, it doesn't duplicate
+        # Webbee's own AI-writing actions.
+        body = _article_editor(article_id, sections)
 
     delete_btn = ui.Button(label="Delete article", variant="danger", size="sm",
                             on_click=ui.Call("delete_article", article_id=article_id))

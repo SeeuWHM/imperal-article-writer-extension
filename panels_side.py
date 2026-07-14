@@ -34,8 +34,8 @@ def _active_project_detail(p: dict) -> ui.UINode:
     return ui.Stack(gap=1, children=children)
 
 
-def _project_row(p: dict) -> ui.UINode:
-    """Compact row for every project that ISN'T the one currently open."""
+def _project_list_item(p: dict) -> ui.UINode:
+    """One compact row for a project that ISN'T the one currently open."""
     return ui.ListItem(
         id=p["id"], title=p.get("name") or "(untitled)", subtitle=p.get("site_url") or "",
         on_click=ui.Call("__panel__workspace", view="articles", project_id=p["id"]),
@@ -71,7 +71,11 @@ async def sidebar_panel(ctx):
             body.append(_active_project_detail(active))
             if others:
                 body.append(ui.Divider())
-        body.extend(_project_row(p) for p in others)
+        if others:
+            # ListItem must live inside a List — a bare ListItem as a direct
+            # Stack child is what made the whole sidebar vanish after the
+            # split-view change (this exact bug, live 2026-07-14).
+            body.append(ui.List(items=[_project_list_item(p) for p in others]))
 
     new_project_form = ui.Form(
         action="create_project",
