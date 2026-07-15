@@ -97,15 +97,15 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
     flags = seo_score.get("flags") or []
     sections = data.get("sections") or []
 
-    header = ui.Stack(children=[
+    header = ui.Stack(gap=3, children=[
         _back_button(project_id),
         ui.Header(text=data.get("title") or data.get("target_keyword") or "(untitled)", level=4),
-        ui.Stack(direction="h", gap=2, children=[
+        ui.Stack(direction="h", gap=2, wrap=True, children=[
             ui.Badge(label=data.get("status", "idea"), color=STATUS_COLOR.get(data.get("status", "idea"), "gray")),
             ui.Badge(label=f"{data.get('word_count', 0)} words", color="gray"),
             *([ui.Badge(label=f, color="yellow") for f in flags]),
         ]),
-    ], gap=2)
+    ])
 
     status_form = ui.Form(
         action="update_article_status", submit_label="Update status",
@@ -138,11 +138,16 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
     delete_btn = ui.Button(label="Delete article", variant="danger", size="sm",
                             on_click=ui.Call("delete_article", article_id=article_id))
 
-    # Delete sits right under the header, not after the document body — a
-    # destructive control shouldn't be buried past however many thousand
-    # words the article has, mixed in with what's being written/edited.
-    return ui.Stack(children=[
-        header, delete_btn, ui.Divider(), status_form, ui.Divider(), body,
+    # Status control and delete sit side by side in one row, not stacked —
+    # keeps the top of the panel from feeling cramped, and keeps the
+    # destructive action visually separate from (not buried inside) the
+    # document body below.
+    controls = ui.Stack(direction="h", gap=3, justify="between", align="center", children=[
+        status_form, delete_btn,
+    ])
+
+    return ui.Stack(gap=3, children=[
+        header, ui.Divider(), controls, ui.Divider(), body,
     ])
 
 
