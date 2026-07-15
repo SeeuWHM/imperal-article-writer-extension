@@ -248,11 +248,11 @@ async def test_delete_article_success(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_export_article_text_joins_sections(monkeypatch):
+async def test_export_article_text_returns_html(monkeypatch):
     async def fake_call(ctx, method, path, **kw):
         assert method == "GET" and path == "/v1/articles/a1"
         return {
-            "id": "a1", "title": "My Article", "meta_description": "Meta.",
+            "id": "a1", "title": "My Article", "meta_description": "Meta.", "word_count": 4,
             "sections": [
                 {"heading": "Intro", "content": "First bit."},
                 {"heading": "Conclusion", "content": "Last bit."},
@@ -263,7 +263,9 @@ async def test_export_article_text_joins_sections(monkeypatch):
     result = await handlers_articles.fn_export_article_text(_ctx(), ArticleIdParams(article_id="a1"))
     assert result.status == "success"
     assert result.data.title == "My Article"
-    assert result.data.text == "Intro\n\nFirst bit.\n\nConclusion\n\nLast bit."
+    assert result.data.html == (
+        "<h2>Intro</h2><p>First bit.</p><h2>Conclusion</h2><p>Last bit.</p>"
+    )
 
 
 # ─── generation / patch ────────────────────────────────────────────────────

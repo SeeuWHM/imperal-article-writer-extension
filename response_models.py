@@ -93,9 +93,14 @@ class DeletedResponse(BaseModel):
 class ArticleFullText(BaseModel):
     """The one deliberate exception to 'never return body to chat' — see
     module docstring. Only export_article_text (handlers_articles.py)
-    constructs this."""
+    constructs this.
+
+    `html` is real markup (<h2>, <strong>, <ul>...) — both Notes
+    (content_text is "HTML content from Tiptap editor") and Mail's
+    send/reply (is_html=true, added 2026-07-15) render it with formatting
+    preserved, so there's no separate plain-text field to keep in sync."""
 
     id: str
     title: Optional[str] = None
     meta_description: Optional[str] = None
-    text: str
+    html: str

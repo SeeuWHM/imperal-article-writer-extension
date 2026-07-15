@@ -29,7 +29,7 @@ from imperal_sdk.types import ActionResult
 
 from app import chat
 from api_client import call_backend
-from richtext import from_html, html_to_sections
+from richtext import from_html, html_to_sections, sections_to_html
 from params import (
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
     UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
@@ -252,11 +252,14 @@ async def fn_delete_article(ctx, params: ArticleIdParams) -> ActionResult:
 @chat.function(
     "export_article_text",
     description=(
-        "Get the FULL article text (title + body, one plain-text document) so it can be handed "
-        "to another extension or the user — sending it by email, saving it to a note, pasting it "
-        "elsewhere. ONLY call this when the user explicitly asks to send/export/copy the article "
-        "somewhere. Never call this for routine status checks, listing, or quality review — use "
-        "list_articles / check_generation_status for those, which stay cheap on purpose."
+        "Get the FULL article as real HTML (title + body with <h2>/<strong>/<ul> markup) so it "
+        "can be handed to another extension or the user — sending it by email, saving it to a "
+        "note, pasting it elsewhere. Pass the returned `html` field straight through: to Mail's "
+        "send()/reply() with is_html=true (preserves formatting), or to Notes' create_note "
+        "content (Notes stores real HTML from its own Tiptap editor). ONLY call this when the "
+        "user explicitly asks to send/export/copy the article somewhere. Never call this for "
+        "routine status checks, listing, or quality review — use list_articles / "
+        "check_generation_status for those, which stay cheap on purpose."
     ),
     action_type="read",
     data_model=ArticleFullText,
@@ -267,15 +270,9 @@ async def fn_export_article_text(ctx, params: ArticleIdParams) -> ActionResult:
     if "error" in data:
         return _err(data)
     sections = data.get("sections") or []
-    parts = []
-    for s in sections:
-        if s.get("heading"):
-            parts.append(s["heading"])
-        if s.get("content"):
-            parts.append(s["content"])
-    text = "\n\n".join(parts)
+    html = sections_to_html(sections)
     result = ArticleFullText(
         id=data.get("id", params.article_id), title=data.get("title"),
-        meta_description=data.get("meta_description"), text=text,
+        meta_description=data.get("meta_description"), html=html,
     )
-    return ActionResult.success(data=result, summary=f"Exported {len(text.split())} word(s).")
+    return ActionResult.success(data=result, summary=f"Exported {data.get('word_count', 0)} word(s) as HTML.")
