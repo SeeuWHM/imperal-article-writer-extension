@@ -96,22 +96,34 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
     seo_score = data.get("seo_score") or {}
     flags = seo_score.get("flags") or []
     sections = data.get("sections") or []
+    status = data.get("status", "idea")
 
-    header = ui.Stack(gap=3, children=[
-        _back_button(project_id),
-        ui.Header(text=data.get("title") or data.get("target_keyword") or "(untitled)", level=4),
-        ui.Stack(direction="h", gap=2, wrap=True, children=[
-            ui.Badge(label=data.get("status", "idea"), color=STATUS_COLOR.get(data.get("status", "idea"), "gray")),
-            ui.Badge(label=f"{data.get('word_count', 0)} words", color="gray"),
-            *([ui.Badge(label=f, color="yellow") for f in flags]),
-        ]),
+    delete_btn = ui.Button(label="Delete article", icon="Trash2", variant="danger", size="sm",
+                           on_click=ui.Call("delete_article", article_id=article_id))
+
+    # Top action bar: back on the left, destructive delete pinned to the far
+    # right. A horizontal Stack keeps the ghost "Back" button at its content
+    # width (a lone Button in a vertical Stack stretches full-width) and keeps
+    # delete visually separated from it so it can't be misclicked.
+    top_bar = ui.Stack(direction="h", gap=2, justify="between", align="center", wrap=True, children=[
+        _back_button(project_id), delete_btn,
     ])
 
+    badges = ui.Stack(direction="h", gap=2, wrap=True, children=[
+        ui.Badge(label=status, color=STATUS_COLOR.get(status, "gray")),
+        ui.Badge(label=f"{data.get('word_count', 0)} words", color="gray"),
+        *([ui.Badge(label=f, color="yellow") for f in flags]),
+    ])
+
+    # Status control is its own full-width row (NOT nested inside a horizontal
+    # flex row) — a ui.Form as a flex child breaks the layout flow and made the
+    # whole header overlap. This is the same flat structure mail-client's
+    # email-viewer panel uses.
     status_form = ui.Form(
         action="update_article_status", submit_label="Update status",
         defaults={"article_id": article_id},
         children=[
-            ui.Select(param_name="status", value=data.get("status", "idea"), options=[
+            ui.Select(param_name="status", value=status, options=[
                 {"value": s, "label": s.capitalize()} for s in STATUS_ORDER
             ]),
         ],
@@ -135,19 +147,17 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
         # Webbee's own AI-writing actions.
         body = _article_editor(article_id, sections)
 
-    delete_btn = ui.Button(label="Delete article", variant="danger", size="sm",
-                            on_click=ui.Call("delete_article", article_id=article_id))
-
-    # Status control and delete sit side by side in one row, not stacked —
-    # keeps the top of the panel from feeling cramped, and keeps the
-    # destructive action visually separate from (not buried inside) the
-    # document body below.
-    controls = ui.Stack(direction="h", gap=3, justify="between", align="center", children=[
-        status_form, delete_btn,
-    ])
-
-    return ui.Stack(gap=3, children=[
-        header, ui.Divider(), controls, ui.Divider(), body,
+    # Flat vertical document: action bar → title → badges → status control →
+    # divider → body. No nested horizontal flex holding a Form (that was what
+    # made the header elements pile on top of each other). className mirrors
+    # mail-client's viewer so content isn't flush against the panel edge.
+    return ui.Stack(gap=3, className="px-4 pb-4", children=[
+        top_bar,
+        ui.Header(text=data.get("title") or data.get("target_keyword") or "(untitled)", level=4),
+        badges,
+        status_form,
+        ui.Divider(),
+        body,
     ])
 
 
