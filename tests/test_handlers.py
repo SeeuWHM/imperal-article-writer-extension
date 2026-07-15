@@ -266,6 +266,7 @@ async def test_export_article_text_returns_html(monkeypatch):
     assert result.data.html == (
         "<h2>Intro</h2><p>First bit.</p><h2>Conclusion</h2><p>Last bit.</p>"
     )
+    assert result.data.text == "INTRO\n-----\n\nFirst bit.\n\nCONCLUSION\n----------\n\nLast bit."
 
 
 # ─── generation / patch ────────────────────────────────────────────────────

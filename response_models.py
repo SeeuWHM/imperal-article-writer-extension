@@ -95,12 +95,17 @@ class ArticleFullText(BaseModel):
     module docstring. Only export_article_text (handlers_articles.py)
     constructs this.
 
-    `html` is real markup (<h2>, <strong>, <ul>...) — both Notes
-    (content_text is "HTML content from Tiptap editor") and Mail's
-    send/reply (is_html=true, added 2026-07-15) render it with formatting
-    preserved, so there's no separate plain-text field to keep in sync."""
+    BOTH `text` and `html` are populated — `html` is real markup
+    (<h2>/<strong>/<ul>) for Notes/Mail(is_html=true); `text` is a plain
+    fallback. 2026-07-15 incident: dropping `text` (keeping only `html`)
+    broke live email/note handoffs — something in the kernel's cross-tool
+    value-passing keyed off a field literally named `text`, and lost it
+    silently (a raw "{{article_text_latest}}" placeholder went out in a
+    real email instead). Keep both permanently; removing either without
+    confirming what depends on it is how that incident happened."""
 
     id: str
     title: Optional[str] = None
     meta_description: Optional[str] = None
+    text: str
     html: str

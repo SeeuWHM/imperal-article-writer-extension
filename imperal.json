@@ -1262,7 +1262,7 @@
     },
     {
       "name": "export_article_text",
-      "description": "Get the FULL article as real HTML (title + body with <h2>/<strong>/<ul> markup) so it can be handed to another extension or the user — sending it by email, saving it to a note, pasting it elsewhere. Pass the returned `html` field straight through: to Mail's send()/reply() with is_html=true (preserves formatting), or to Notes' create_note content (Notes stores real HTML from its own Tiptap editor). ONLY call this when the user explicitly asks to send/export/copy the article somewhere. Never call this for routine status checks, listing, or quality review — use list_articles / check_generation_status for those, which stay cheap on purpose.",
+      "description": "Get the FULL article body — both as HTML (`html`: <h2>/<strong>/<ul> markup) and plain text (`text`) — so it can be handed to another extension or the user: sending it by email, saving it to a note, pasting it elsewhere. Use `html` with Mail's send()/reply() (is_html=true) or Notes' create_note content for real formatting; use `text` for a plain fallback. ONLY call this when the user explicitly asks to send/export/copy the article somewhere. Never call this for routine status checks, listing, or quality review — use list_articles / check_generation_status for those, which stay cheap on purpose.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
@@ -1282,7 +1282,7 @@
         "type": "object"
       },
       "return_schema": {
-        "description": "The one deliberate exception to 'never return body to chat' — see\nmodule docstring. Only export_article_text (handlers_articles.py)\nconstructs this.\n\n`html` is real markup (<h2>, <strong>, <ul>...) — both Notes\n(content_text is \"HTML content from Tiptap editor\") and Mail's\nsend/reply (is_html=true, added 2026-07-15) render it with formatting\npreserved, so there's no separate plain-text field to keep in sync.",
+        "description": "The one deliberate exception to 'never return body to chat' — see\nmodule docstring. Only export_article_text (handlers_articles.py)\nconstructs this.\n\nBOTH `text` and `html` are populated — `html` is real markup\n(<h2>/<strong>/<ul>) for Notes/Mail(is_html=true); `text` is a plain\nfallback. 2026-07-15 incident: dropping `text` (keeping only `html`)\nbroke live email/note handoffs — something in the kernel's cross-tool\nvalue-passing keyed off a field literally named `text`, and lost it\nsilently (a raw \"{{article_text_latest}}\" placeholder went out in a\nreal email instead). Keep both permanently; removing either without\nconfirming what depends on it is how that incident happened.",
         "properties": {
           "id": {
             "title": "Id",
@@ -1312,6 +1312,10 @@
             "default": null,
             "title": "Meta Description"
           },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
           "html": {
             "title": "Html",
             "type": "string"
@@ -1319,6 +1323,7 @@
         },
         "required": [
           "id",
+          "text",
           "html"
         ],
         "title": "ArticleFullText",

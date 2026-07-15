@@ -106,6 +106,27 @@ def from_html(html: str) -> str:
     return _unescape("\n\n".join(b for b in converted if b))
 
 
+def to_export_text(sections: list[dict]) -> str:
+    """Plain-text export — kept alongside sections_to_html() for
+    export_article_text (see response_models.ArticleFullText's docstring
+    for why both fields are required, not just html). Strips markdown
+    syntax rather than show literal ** and - as clutter; a heading gets a
+    plain-text-legible treatment (upper-case + underline) instead of
+    trying to fake bold."""
+    parts = []
+    for section in sections:
+        heading = (section.get("heading") or "").strip()
+        if heading:
+            parts.append(f"{heading.upper()}\n{'-' * len(heading)}")
+        content = section.get("content") or ""
+        content = _BOLD.sub(r"\1", content)
+        content = _ITALIC.sub(r"\1", content)
+        content = re.sub(r"(?m)^[-*] ", "• ", content)  # "- item" -> "• item"
+        if content:
+            parts.append(content)
+    return "\n\n".join(parts)
+
+
 def sections_to_html(sections: list[dict]) -> str:
     """Merge an article's sections into ONE HTML document — the panel's
     single-window editor. Each section's heading becomes a real <h2>, so

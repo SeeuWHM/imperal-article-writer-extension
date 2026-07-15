@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from richtext import to_html, from_html, sections_to_html, html_to_sections
+from richtext import to_html, from_html, sections_to_html, html_to_sections, to_export_text
 
 
 def test_to_html_wraps_paragraphs():
@@ -139,5 +139,20 @@ def test_html_to_sections_accepts_h1_and_h3_as_boundaries():
         {"heading": "Big Heading", "content": "Body one."},
         {"heading": "Small heading", "content": "Body two."},
     ]
+
+
+def test_to_export_text_strips_markdown_and_headlines_sections():
+    sections = [
+        {"heading": "Intro", "content": "Some **bold** and *em* text."},
+        {"heading": "Checklist", "content": "- one\n- two"},
+    ]
+    assert to_export_text(sections) == (
+        "INTRO\n-----\n\nSome bold and em text.\n\n"
+        "CHECKLIST\n---------\n\n• one\n• two"
+    )
+
+
+def test_to_export_text_handles_headingless_section():
+    assert to_export_text([{"heading": None, "content": "Just text."}]) == "Just text."
 
 
