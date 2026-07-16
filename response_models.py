@@ -25,6 +25,15 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
+class ReferenceLinkRecord(BaseModel):
+    """One internal page the article writer may link to. `description` = what the
+    page is about / its target topic; the writer turns it into a natural,
+    in-sentence anchor phrase (never the bare brand/domain)."""
+
+    url: str = ""
+    description: str = ""
+
+
 class ProjectRecord(BaseModel):
     id: str
     name: str = ""
@@ -33,11 +42,18 @@ class ProjectRecord(BaseModel):
     keywords: List[str] = Field(default_factory=list)
     useful_links: List[str] = Field(default_factory=list)
     social_links: List[str] = Field(default_factory=list)
+    reference_links: List[ReferenceLinkRecord] = Field(default_factory=list)
     brand_voice: Optional[str] = None
 
 
 class ProjectListResponse(BaseModel):
     projects: List[ProjectRecord] = Field(default_factory=list)
+    count: int = 0
+
+
+class ReferenceLinksResponse(BaseModel):
+    project_id: str
+    links: List[ReferenceLinkRecord] = Field(default_factory=list)
     count: int = 0
 
 

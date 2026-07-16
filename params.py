@@ -38,6 +38,19 @@ class ProjectIdParams(BaseModel):
     project_id: str = Field(..., description="Project ID from list_projects")
 
 
+class AddReferenceLinkParams(BaseModel):
+    project_id: str = Field(..., description="Project ID from list_projects")
+    url: str = Field(..., min_length=1, max_length=500,
+                     description="URL of an internal page on THIS project's own site")
+    description: str = Field(..., min_length=1, max_length=300,
+                             description="What that page is about / its topic — the writer uses it to build a natural link anchor")
+
+
+class RemoveReferenceLinkParams(BaseModel):
+    project_id: str = Field(..., description="Project ID from list_projects")
+    url: str = Field(..., min_length=1, max_length=500, description="URL of the reference link to remove")
+
+
 class CreateArticleParams(BaseModel):
     project_id: str = Field(..., description="Project this article belongs to")
     title: Optional[str] = Field(default=None, max_length=500)
