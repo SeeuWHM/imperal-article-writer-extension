@@ -1,6 +1,6 @@
 # Article Writer Extension — Full Documentation
 
-**Version:** 2.0.0 (full rebuild, 2026-07-13) | **app_id:** `imperal-article-writer-extension` |
+**Version:** 2.1.1 (code HEAD `728c047`; prod active v2.0.0 — redeploy pending) | **app_id:** `imperal-article-writer-extension` |
 **tool_name:** `article_writer`
 **Git:** `github.com/SeeuWHM/imperal-article-writer-extension`
 **Backend:** `SeeU-Extensions/article-writer-backend/` (single source of truth for the backend —
@@ -43,7 +43,7 @@ scope**, left to separate extensions that Webbee orchestrates on its own.
 
 ```
 User (panel / chat)
-    ↓ chat.function (15) or panel action
+    ↓ chat.function (18) or panel action
 handlers_projects.py / handlers_articles.py / handlers_generate.py
     ↓ HTTP (api_client.call_backend, GET/POST/PATCH/PUT/DELETE) — Bearer backend_jwt + X-Imperal-Id header
       article-writer-api (shared backend microservice, api-server:8017)
@@ -105,13 +105,16 @@ legacy naming leftovers.
 
 ---
 
-## Chat-function inventory (15 functions)
+## Chat-function inventory (18 functions)
 
 ### `handlers_projects.py`
 - `create_project(name, site_url?, description?, keywords?, useful_links?, social_links?, brand_voice?)` — write
 - `list_projects()` — read, `chain_callable=True`
 - `update_project_context(project_id, ...any field...)` — write, requires ≥1 field
 - `delete_project(project_id)` — destructive, cascades to articles
+- `add_reference_link(project_id, url, description)` — write, **new (v2.1.0)**. One internal page of the project's own site as an interlinking target, stored `{url, description}` (deduped by url). See Internal linking below.
+- `list_reference_links(project_id)` — read, `chain_callable=True`, **new**. The project's reference links (url + description).
+- `remove_reference_link(project_id, url)` — destructive, **new**. Removes one reference link by url.
 
 ### `handlers_articles.py`
 - `create_article(project_id, title?, target_keyword?)` — write, empty shell only
@@ -150,6 +153,22 @@ legacy naming leftovers.
 ### Skeleton (`skeleton.py`, 1)
 `article_writer_overview` (ttl 60s) — project count, article count by status, degrades to zeros
 with a friendly instruction if the backend is unreachable (never blocks or errors).
+
+---
+
+## Internal linking (reference links) — v2.1.0
+
+Each project stores a list of **reference links** — internal pages of its own site the writer may
+link to — as `{url, description}` objects (`reference_links` on the backend project;
+`ProjectRecord.reference_links` here; managed from chat via `add_reference_link` /
+`list_reference_links` / `remove_reference_link`). The `description` is the page's topic; the
+backend's generation pipeline uses it to build a **natural, varied, in-sentence anchor** (e.g.
+"…they were missing a `[reliable hosting plan](url)` to get their sites to the top…") — never an
+invented URL, never the bare brand/domain, never a bolted-on "keyword(link) is X" label. Webbee is
+expected to collect these from the site's own pages (GSC top pages, SE Ranking tracked pages, a
+sitemap). All prompt + validation logic lives in the **backend** (`article-writer-backend/PLAN.md`
+§6b) — this extension only stores/reads the list. Links round-trip through `richtext.py` and are
+preserved on save and in both `export_article_text` fields.
 
 ---
 
@@ -260,8 +279,8 @@ shared-backend-auth design.
 2. **RichEditor has no link-insertion button** (SDK/frontend gap, not fixable from this
    extension) — see Panels above. Worth relaying to the SDK developer if `ui.Link` functionality
    is ever meant to be reachable from inside `ui.RichEditor`.
-3. **Not yet deployed via Developer Portal.** Code is pushed to git (current HEAD `4b91b75`); the
-   git → Developer Portal deploy step (per workspace rule, a separate explicit action) hasn't
-   happened yet.
+3. **Deployed & active, but prod is behind code.** The app is deployed/active in the Developer
+   Portal at **v2.0.0**; current code HEAD is **`728c047` (v2.1.1)** — the reference-links functions
+   and the new quill/feather icon land only on the next git → Developer Portal redeploy.
 4. Backend-side open items — see `article-writer-backend/PLAN.md` (source of truth for the
    backend); this doc doesn't duplicate that list.
