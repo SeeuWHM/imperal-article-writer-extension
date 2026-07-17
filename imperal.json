@@ -13,7 +13,8 @@
     "AI Article Generation",
     "Grounded Self-Review",
     "Panel Article Editor",
-    "Natural-Language Article Patching"
+    "Natural-Language Article Patching",
+    "notify:push"
   ],
   "tools": [
     {

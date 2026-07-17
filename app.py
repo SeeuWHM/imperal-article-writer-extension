@@ -57,6 +57,7 @@ ext = Extension(
         "Grounded Self-Review",
         "Panel Article Editor",
         "Natural-Language Article Patching",
+        "notify:push",
     ],
 )
 
