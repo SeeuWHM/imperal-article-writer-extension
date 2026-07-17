@@ -115,6 +115,31 @@ async def test_delete_project_success(monkeypatch):
     assert result.data.deleted is True
 
 
+@pytest.mark.asyncio
+async def test_open_project_refreshes_sidebar_and_workspace(monkeypatch):
+    """2026-07-18 live bug: switching projects via the sidebar's ListItem only
+    ever refreshed the workspace panel (a plain ui.Call("__panel__workspace",
+    ...) targets one panel), so the sidebar silently kept showing the
+    previous project's expanded detail until a full page reload. open_project
+    must refresh both, and must reset article_id (never carry over the
+    previously-open article into a different project)."""
+    async def fake_call(ctx, method, path, **kw):
+        assert method == "GET" and path == "/v1/projects/p2"
+        return {"id": "p2", "name": "Other Site", "keywords": ["a"]}
+
+    saved = {}
+    async def fake_save_nav(ctx, values):
+        saved.update(values)
+
+    monkeypatch.setattr(handlers_projects, "call_backend", fake_call)
+    monkeypatch.setattr(handlers_projects, "save_nav", fake_save_nav)
+    result = await handlers_projects.fn_open_project(_ctx(), ProjectIdParams(project_id="p2"))
+    assert result.status == "success"
+    assert result.data.name == "Other Site"
+    assert result.refresh_panels == ["sidebar", "workspace"]
+    assert saved == {"view": "articles", "project_id": "p2", "article_id": ""}
+
+
 # ─── articles ──────────────────────────────────────────────────────────────
 
 @pytest.mark.asyncio

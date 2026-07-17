@@ -35,10 +35,17 @@ def _active_project_detail(p: dict) -> ui.UINode:
 
 
 def _project_list_item(p: dict) -> ui.UINode:
-    """One compact row for a project that ISN'T the one currently open."""
+    """One compact row for a project that ISN'T the one currently open.
+
+    Routes through open_project (a real chat.function with
+    refresh_panels=["sidebar", "workspace"]), NOT a raw
+    ui.Call("__panel__workspace", ...) — a plain panel-to-panel Call only
+    ever refreshes the ONE panel it targets, so the sidebar itself silently
+    kept showing the previous project's expanded detail until a full page
+    reload (live bug, 2026-07-18)."""
     return ui.ListItem(
         id=p["id"], title=p.get("name") or "(untitled)", subtitle=p.get("site_url") or "",
-        on_click=ui.Call("__panel__workspace", view="articles", project_id=p["id"]),
+        on_click=ui.Call("open_project", project_id=p["id"]),
     )
 
 

@@ -637,6 +637,136 @@
       "owner_chat_tool": "article_writer"
     },
     {
+      "name": "open_project",
+      "description": "PANEL-ONLY: switch the currently-open project (sidebar detail + workspace board). Not for chat use — this is pure UI navigation state, nothing about the project itself changes.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:project"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "project_id": {
+            "description": "Project ID from list_projects",
+            "title": "Project Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "title": "ProjectIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ReferenceLinkRecord": {
+            "description": "One internal page the article writer may link to. `description` = what the\npage is about / its target topic; the writer turns it into a natural,\nin-sentence anchor phrase (never the bare brand/domain).",
+            "properties": {
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "title": "ReferenceLinkRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "site_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Site Url"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "keywords": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Keywords",
+            "type": "array"
+          },
+          "useful_links": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Useful Links",
+            "type": "array"
+          },
+          "social_links": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Social Links",
+            "type": "array"
+          },
+          "reference_links": {
+            "items": {
+              "$ref": "#/$defs/ReferenceLinkRecord"
+            },
+            "title": "Reference Links",
+            "type": "array"
+          },
+          "brand_voice": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Brand Voice"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "ProjectRecord",
+        "type": "object"
+      },
+      "event": "article-writer.project.opened",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
       "name": "add_reference_link",
       "description": "Add ONE internal page of THIS project's own site as a reference link the article writer may link to, with a short description of what that page is about (its topic / target keyword). The writer uses the description to weave a natural, in-sentence anchor when it links to the page — give a real topic, never just the brand name. Good sources to collect from: the site's top pages in Google Search Console, its tracked pages in SE Ranking, or its sitemap. Use for: add an internal link for the writer, register a page for interlinking.",
       "action_type": "write",
