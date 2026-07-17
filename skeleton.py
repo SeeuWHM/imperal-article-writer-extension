@@ -4,9 +4,54 @@ Per Imperal SDK: skeleton = LLM context cache holding ready API responses.
 More data here = better Webbee routing and answers, with zero extra
 round-trips. Never carries full article bodies — same rule as the chat
 functions (response_models.ArticleSummary docstring).
+
+Proactive "ready" notice ships TWO ways (mail-client's mail_inbox_summary
+does the same, see its ctx.notify() + skeleton_alert_mail_inbox_summary):
+  1. A direct ctx.notify() call right here in the refresh tool, gated on a
+     review-count baseline WE persist in ctx.store (see _load_review_count/
+     _save_review_count below). This is the reliable path.
+  2. skeleton_alert_article_writer_overview below — the kernel's own
+     old/new skeleton-diff mechanism. Kept as a harmless second layer, but
+     NOT relied on: its "old" baseline lives in the IcnliSkeletonWorkflow
+     Temporal workflow's in-memory state, which resets to empty every time
+     the PARENT session workflow rotates and respawns the skeleton child
+     (routine, unrelated to this extension — kernel/workflows/session/
+     skeleton_watchdog.py's _spawn() never passes previous_data forward on
+     a parent-triggered respawn, only within the child's own continue_as_new
+     — 2026-07-18 investigation). If a generation finishes while that
+     respawn happens to occur, the kernel's own alert silently never fires
+     — no error, just a state reset. ctx.store survives that respawn, so
+     path 1 doesn't have this gap.
 """
 from app import ext
 from api_client import call_backend
+
+_NOTIFY_STATE_COL = "article_writer_notify_state"
+
+
+async def _load_review_count(ctx) -> tuple[int, str | None]:
+    """Returns (last-seen review count, doc id or None if never persisted).
+    doc id None means this is the very first refresh ever for this user —
+    caller must seed the baseline WITHOUT notifying (nothing "just
+    finished", we simply have no prior snapshot to compare against)."""
+    try:
+        page = await ctx.store.query(_NOTIFY_STATE_COL, limit=1)
+        docs = getattr(page, "data", None) or []
+        if docs and isinstance(getattr(docs[0], "data", None), dict):
+            return int(docs[0].data.get("review_count", 0) or 0), docs[0].id
+    except Exception:
+        pass
+    return 0, None
+
+
+async def _save_review_count(ctx, doc_id: str | None, count: int) -> None:
+    try:
+        if doc_id:
+            await ctx.store.update(_NOTIFY_STATE_COL, doc_id, {"review_count": count})
+        else:
+            await ctx.store.create(_NOTIFY_STATE_COL, {"review_count": count})
+    except Exception:
+        pass  # notify-state persistence is best-effort, never load-bearing
 
 
 @ext.skeleton("article_writer_overview", ttl=60, alert=True,
@@ -55,6 +100,24 @@ async def skeleton_refresh_overview(ctx) -> dict:
             + ". Use list_projects/list_articles for details, generate_article to write, "
               "patch_article to edit a specific part."
         )
+
+    # Direct, durable proactive notify — see module docstring for why this
+    # doesn't rely solely on the kernel's skeleton-diff alert below.
+    prev_review, _doc_id = await _load_review_count(ctx)
+    if _doc_id is not None and by_status["review"] > prev_review and latest_ready:
+        added = by_status["review"] - prev_review
+        try:
+            if added == 1:
+                await ctx.notify(
+                    f'Your article "{latest_ready}" is written and ready for review in the Article Writer panel.'
+                )
+            else:
+                await ctx.notify(
+                    f"{added} articles just finished and are ready for review in the Article Writer panel."
+                )
+        except Exception:
+            pass
+    await _save_review_count(ctx, _doc_id, by_status["review"])
 
     return {"response": {
         "project_count": project_count,
