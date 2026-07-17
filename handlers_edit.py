@@ -64,7 +64,9 @@ async def fn_edit_full_article(ctx, params: EditFullArticleParams) -> ActionResu
     """Webbee's full-text edit — split submitted Markdown into title + sections, store verbatim."""
     title, sections = markdown_to_document(params.content_markdown)
     if not sections:
-        return ActionResult.error(error="Nothing to save — the submitted text is empty.")
+        return ActionResult.error(
+            error="Nothing to save — the submitted text is empty.", code="VALIDATION_MISSING_FIELD",
+        )
     data = await call_backend(
         ctx, "PUT", f"/v1/articles/{params.article_id}/sections", json={"sections": sections},
     )

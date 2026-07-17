@@ -12,13 +12,9 @@ preview (see response_models.PatchResult).
 from imperal_sdk.types import ActionResult
 
 from app import chat
-from api_client import call_backend, GENERATE_TIMEOUT, PATCH_TIMEOUT
+from api_client import call_backend, _err, GENERATE_TIMEOUT, PATCH_TIMEOUT
 from params import GenerateArticleParams, GenerationJobStatusParams, PatchArticleParams
 from response_models import GenerationJobResponse, GenerationStatusResponse, PatchResult
-
-
-def _err(data: dict) -> ActionResult:
-    return ActionResult.error(error=data.get("error", "unknown error"))
 
 
 @chat.function(
@@ -99,12 +95,18 @@ async def fn_patch_article(ctx, params: PatchArticleParams) -> ActionResult:
     if "error" in data:
         return _err(data)
     seo_score = data.get("seo_score") or {}
+    matched = data.get("matched", True)
     result = PatchResult(
-        section_id=data.get("section_id", ""), order_index=data.get("order_index", 0),
+        matched=matched, replaced_count=data.get("replaced_count", 1 if matched else 0),
+        section_id=data.get("section_id"), order_index=data.get("order_index"),
         heading=data.get("heading"), preview=data.get("preview", ""),
         word_count=seo_score.get("word_count", 0), seo_flags=seo_score.get("flags") or [],
     )
-    return ActionResult.success(
-        data=result, summary=f'Updated section "{result.heading or result.order_index}".',
-        refresh_panels=["workspace"],
-    )
+    if not matched:
+        summary = (
+            "Could not find any section containing that text — nothing was changed. "
+            "Check the target text is still in the article (read_full_article) before retrying."
+        )
+    else:
+        summary = f'Updated section "{result.heading or result.order_index}".'
+    return ActionResult.success(data=result, summary=summary, refresh_panels=["workspace"])

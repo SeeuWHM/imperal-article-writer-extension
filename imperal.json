@@ -1,8 +1,8 @@
 {
   "manifest_schema_version": 3,
-  "sdk_version": "5.9.3",
+  "sdk_version": "5.9.9",
   "app_id": "imperal-article-writer-extension",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "name": "Article Writer",
   "description": "AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",
   "icon": "icon.svg",
@@ -1889,15 +1889,41 @@
         "type": "object"
       },
       "return_schema": {
-        "description": "Never the full body — a short preview only.",
+        "description": "Never the full body — a short preview only.\n\nmatched/replaced_count are honesty evidence: when the locate step can't\nfind a section containing the instruction's target, matched=False and\nreplaced_count=0 — nothing gets edited (2026-07-17 incident: a stale\nphone number that no longer existed got \"replaced\" in the wrong section\nand the extension still reported success).",
         "properties": {
+          "matched": {
+            "default": true,
+            "title": "Matched",
+            "type": "boolean"
+          },
+          "replaced_count": {
+            "default": 0,
+            "title": "Replaced Count",
+            "type": "integer"
+          },
           "section_id": {
-            "title": "Section Id",
-            "type": "string"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Section Id"
           },
           "order_index": {
-            "title": "Order Index",
-            "type": "integer"
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Order Index"
           },
           "heading": {
             "anyOf": [
@@ -1912,6 +1938,7 @@
             "title": "Heading"
           },
           "preview": {
+            "default": "",
             "title": "Preview",
             "type": "string"
           },
@@ -1928,11 +1955,6 @@
             "type": "array"
           }
         },
-        "required": [
-          "section_id",
-          "order_index",
-          "preview"
-        ],
         "title": "PatchResult",
         "type": "object"
       },
@@ -2158,19 +2180,29 @@
       "panel_id": "secrets",
       "slot": "right",
       "title": "Secrets",
-      "tree": {}
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
     },
     {
       "panel_id": "sidebar",
       "slot": "left",
       "title": "Article Writer",
-      "tree": {}
+      "tree": {},
+      "icon": "FileText",
+      "refresh": "on_event:article-writer.project.created,article-writer.project.updated,article-writer.project.deleted",
+      "center_overlay": false,
+      "default_width": 260
     },
     {
       "panel_id": "workspace",
       "slot": "center",
       "title": "Article Writer",
-      "tree": {}
+      "tree": {},
+      "icon": "FileText",
+      "refresh": "on_event:article-writer.article.created,article-writer.article.status_changed,article-writer.article.section_saved,article-writer.article.patched,article-writer.article.deleted,article-writer.article.generation_started,article-writer.project.deleted",
+      "center_overlay": false
     }
   ]
 }

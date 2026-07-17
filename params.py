@@ -10,7 +10,33 @@ validation rules.
 # for the same convention/reasoning).
 
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from typing_extensions import Annotated
+from pydantic import AfterValidator, BaseModel, Field
+
+# Placeholder/fabricated values an LLM sometimes emits instead of a real id
+# copied from a prior list/create call (2026-07-17 incident: article_id
+# "unknown" was dispatched straight to the backend and 404'd instead of
+# failing fast with a clear message). Defense-in-depth alongside the
+# kernel's own arg-gate check — real ids are backend-generated uuid4
+# strings, so a non-empty value that happens to match one of these is never
+# a legitimate id.
+_PLACEHOLDER_IDS = {
+    "unknown", "undefined", "null", "none", "n/a", "na", "todo", "tbd",
+    "string", "example", "placeholder", "xxx",
+}
+
+
+def _reject_placeholder_id(v: str) -> str:
+    stripped = v.strip()
+    if not stripped or stripped.lower() in _PLACEHOLDER_IDS:
+        raise ValueError(
+            f"'{v}' looks like a placeholder, not a real id — call the matching list_* function "
+            "first and use the real id it returns."
+        )
+    return v
+
+
+EntityId = Annotated[str, AfterValidator(_reject_placeholder_id)]
 
 
 class CreateProjectParams(BaseModel):
@@ -24,7 +50,7 @@ class CreateProjectParams(BaseModel):
 
 
 class UpdateProjectContextParams(BaseModel):
-    project_id: str = Field(..., description="Project ID from list_projects")
+    project_id: EntityId = Field(..., description="Project ID from list_projects")
     name: Optional[str] = Field(default=None, max_length=255)
     site_url: Optional[str] = Field(default=None, max_length=500)
     description: Optional[str] = Field(default=None, max_length=5000)
@@ -35,11 +61,11 @@ class UpdateProjectContextParams(BaseModel):
 
 
 class ProjectIdParams(BaseModel):
-    project_id: str = Field(..., description="Project ID from list_projects")
+    project_id: EntityId = Field(..., description="Project ID from list_projects")
 
 
 class AddReferenceLinkParams(BaseModel):
-    project_id: str = Field(..., description="Project ID from list_projects")
+    project_id: EntityId = Field(..., description="Project ID from list_projects")
     url: str = Field(..., min_length=1, max_length=500,
                      description="URL of an internal page on THIS project's own site")
     description: str = Field(..., min_length=1, max_length=300,
@@ -47,12 +73,12 @@ class AddReferenceLinkParams(BaseModel):
 
 
 class RemoveReferenceLinkParams(BaseModel):
-    project_id: str = Field(..., description="Project ID from list_projects")
+    project_id: EntityId = Field(..., description="Project ID from list_projects")
     url: str = Field(..., min_length=1, max_length=500, description="URL of the reference link to remove")
 
 
 class CreateArticleParams(BaseModel):
-    project_id: str = Field(..., description="Project this article belongs to")
+    project_id: EntityId = Field(..., description="Project this article belongs to")
     title: Optional[str] = Field(default=None, max_length=500)
     target_keyword: Optional[str] = Field(default=None, max_length=255)
 
@@ -63,16 +89,16 @@ class ListArticlesParams(BaseModel):
 
 
 class ArticleIdParams(BaseModel):
-    article_id: str = Field(..., description="Article ID from list_articles")
+    article_id: EntityId = Field(..., description="Article ID from list_articles")
 
 
 class UpdateArticleStatusParams(BaseModel):
-    article_id: str = Field(...)
+    article_id: EntityId = Field(...)
     status: str = Field(..., description="idea | writing | review | published")
 
 
 class UpdateArticleMetaParams(BaseModel):
-    article_id: str = Field(...)
+    article_id: EntityId = Field(...)
     title: Optional[str] = Field(default=None, max_length=500)
     meta_description: Optional[str] = Field(
         default=None, max_length=320,
@@ -82,7 +108,7 @@ class UpdateArticleMetaParams(BaseModel):
 
 
 class GenerateArticleParams(BaseModel):
-    article_id: str = Field(...)
+    article_id: EntityId = Field(...)
     brief: str = Field(..., min_length=1, max_length=10000, description="What the article should cover")
     target_keyword: Optional[str] = Field(default=None, max_length=255)
     source_snippets: List[str] = Field(
@@ -92,18 +118,18 @@ class GenerateArticleParams(BaseModel):
 
 
 class GenerationJobStatusParams(BaseModel):
-    article_id: str = Field(...)
-    job_id: str = Field(...)
+    article_id: EntityId = Field(...)
+    job_id: EntityId = Field(...)
 
 
 class PatchArticleParams(BaseModel):
-    article_id: str = Field(...)
+    article_id: EntityId = Field(...)
     instruction: str = Field(..., min_length=1, max_length=2000, description="e.g. 'rewrite the paragraph about delivery'")
     section_hint: Optional[str] = Field(default=None, max_length=255, description="Heading or keyword to help locate the section")
 
 
 class SaveArticleSectionParams(BaseModel):
-    article_id: str = Field(...)
+    article_id: EntityId = Field(...)
     order_index: int = Field(..., ge=0)
     heading: Optional[str] = Field(default=None, max_length=500)
     content: Optional[str] = Field(default=None, max_length=200000)
@@ -112,7 +138,7 @@ class SaveArticleSectionParams(BaseModel):
 class SaveFullArticleParams(BaseModel):
     """PANEL-ONLY: the whole merged document from the single-window editor —
     not something Webbee should ever construct from chat."""
-    article_id: str = Field(...)
+    article_id: EntityId = Field(...)
     content_html: str = Field(default="", max_length=400000)
 
 
@@ -122,6 +148,6 @@ class EditFullArticleParams(BaseModel):
     Distinct from patch_article (targeted one-section rewrite): this replaces
     the whole document with exactly what you submit — nothing is re-generated,
     so preserve every unchanged part verbatim."""
-    article_id: str = Field(..., description="Article ID from list_articles")
+    article_id: EntityId = Field(..., description="Article ID from list_articles")
     content_markdown: str = Field(..., min_length=1, max_length=400000,
                                   description="The COMPLETE edited article as Markdown (# title, ## headings, body)")

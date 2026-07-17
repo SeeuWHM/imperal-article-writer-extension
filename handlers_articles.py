@@ -28,7 +28,7 @@ from imperal_sdk import ui
 from imperal_sdk.types import ActionResult
 
 from app import chat
-from api_client import call_backend
+from api_client import call_backend, _err
 from richtext import from_html, html_to_document, sections_to_html, to_export_text
 from params import (
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
@@ -36,10 +36,6 @@ from params import (
     SaveFullArticleParams,
 )
 from response_models import ArticleSummary, ArticleListResponse, DeletedResponse, ArticleFullText
-
-
-def _err(data: dict) -> ActionResult:
-    return ActionResult.error(error=data.get("error", "unknown error"))
 
 
 def _to_summary(a: dict) -> ArticleSummary:
@@ -159,7 +155,8 @@ async def fn_update_article_meta(ctx, params: UpdateArticleMetaParams) -> Action
     fields = params.model_dump(exclude_none=True, exclude={"article_id"})
     if not fields:
         return ActionResult.error(
-            error="Nothing to update — provide title, meta_description, and/or target_keyword."
+            error="Nothing to update — provide title, meta_description, and/or target_keyword.",
+            code="VALIDATION_MISSING_FIELD",
         )
     data = await call_backend(ctx, "PATCH", f"/v1/articles/{params.article_id}/meta", json=fields)
     if "error" in data:
@@ -193,7 +190,9 @@ async def fn_save_article_section(ctx, params: SaveArticleSectionParams) -> Acti
     if "content" in fields:
         fields["content"] = from_html(fields["content"])
     if not fields:
-        return ActionResult.error(error="Nothing to save — provide heading and/or content.")
+        return ActionResult.error(
+            error="Nothing to save — provide heading and/or content.", code="VALIDATION_MISSING_FIELD",
+        )
     data = await call_backend(
         ctx, "PATCH", f"/v1/articles/{params.article_id}/sections/{params.order_index}", json=fields,
     )

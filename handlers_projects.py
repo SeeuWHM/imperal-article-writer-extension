@@ -10,7 +10,7 @@ from imperal_sdk import ui
 from imperal_sdk.types import ActionResult
 
 from app import chat
-from api_client import call_backend
+from api_client import call_backend, _err
 from params import (
     CreateProjectParams, UpdateProjectContextParams, ProjectIdParams,
     AddReferenceLinkParams, RemoveReferenceLinkParams,
@@ -24,10 +24,6 @@ from pydantic import BaseModel
 
 class _EmptyParams(BaseModel):
     """No input required."""
-
-
-def _err(data: dict) -> ActionResult:
-    return ActionResult.error(error=data.get("error", "unknown error"))
 
 
 def _to_record(p: dict) -> ProjectRecord:
@@ -121,7 +117,9 @@ async def fn_update_project_context(ctx, params: UpdateProjectContextParams) -> 
     """Patch one or more context fields on an existing project."""
     fields = params.model_dump(exclude_none=True, exclude={"project_id"})
     if not fields:
-        return ActionResult.error(error="Nothing to update — provide at least one field.")
+        return ActionResult.error(
+            error="Nothing to update — provide at least one field.", code="VALIDATION_MISSING_FIELD",
+        )
     data = await call_backend(ctx, "PATCH", f"/v1/projects/{params.project_id}/context", json=fields)
     if "error" in data:
         return _err(data)

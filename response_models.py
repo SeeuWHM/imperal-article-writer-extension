@@ -92,12 +92,20 @@ class GenerationStatusResponse(BaseModel):
 
 
 class PatchResult(BaseModel):
-    """Never the full body — a short preview only."""
+    """Never the full body — a short preview only.
 
-    section_id: str
-    order_index: int
+    matched/replaced_count are honesty evidence: when the locate step can't
+    find a section containing the instruction's target, matched=False and
+    replaced_count=0 — nothing gets edited (2026-07-17 incident: a stale
+    phone number that no longer existed got "replaced" in the wrong section
+    and the extension still reported success)."""
+
+    matched: bool = True
+    replaced_count: int = 0
+    section_id: Optional[str] = None
+    order_index: Optional[int] = None
     heading: Optional[str] = None
-    preview: str
+    preview: str = ""
     word_count: int = 0
     seo_flags: List[str] = Field(default_factory=list)
 
