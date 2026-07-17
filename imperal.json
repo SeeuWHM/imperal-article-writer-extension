@@ -1669,7 +1669,7 @@
     },
     {
       "name": "generate_article",
-      "description": "Start writing an article's first draft using the project's context plus a brief and any real source facts (from web search or other extensions) it must be grounded in. Runs in the background — call check_generation_status with the returned job_id to see when it's done (status lands on 'review'). Use for: write the article, draft this article.",
+      "description": "Start writing an article's first draft using the project's context plus a brief and any real source facts (from web search or other extensions) it must be grounded in. Runs in the background. To check when it's done: if you generated just this ONE article and want cost/model/error detail on THIS run, poll check_generation_status with the returned job_id; if you generated SEVERAL articles at once (or don't need per-run detail), it's simpler and more reliable to just call list_articles(status='review') a bit later instead of tracking every job_id — status lands on 'review' when ready either way. Use for: write the article, draft this article.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1749,7 +1749,7 @@
     },
     {
       "name": "check_generation_status",
-      "description": "Check progress of a generate_article job — status, model used, cost. Use for: is the article done, check generation status.",
+      "description": "Check ONE specific generate_article job by its job_id — status, model used, cost, error detail. This needs the exact (article_id, job_id) pair from when you started it, so it does NOT scale well to checking several articles generated in the same turn — for that, call list_articles(status='review') instead, which needs no job_id at all and just shows what's actually ready right now. Use this one only when you genuinely need the per-run cost/model/error detail for a single job. Use for: check generation progress for this one job, what model/cost did this generation use.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
