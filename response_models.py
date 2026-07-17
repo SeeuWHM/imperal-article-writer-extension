@@ -125,3 +125,16 @@ class ArticleFullText(BaseModel):
     meta_description: Optional[str] = None
     text: str
     html: str
+
+
+class ArticleTextRecord(BaseModel):
+    """Full article body as editable Markdown — the read side of Webbee's edit
+    loop (read_full_article -> edit -> edit_full_article). Distinct from
+    ArticleFullText (export/send, html+text): this is the round-trippable
+    Markdown Webbee edits and resends."""
+
+    id: str
+    title: Optional[str] = None
+    status: str = "idea"
+    word_count: int = 0
+    markdown: str = ""

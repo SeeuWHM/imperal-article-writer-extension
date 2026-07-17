@@ -9,7 +9,7 @@ sys.path.insert(0, str(ROOT))
 
 from richtext import (
     to_html, from_html, sections_to_html, html_to_sections, to_export_text,
-    document_to_html, html_to_document,
+    document_to_html, html_to_document, document_to_markdown, markdown_to_document,
 )
 
 
@@ -191,5 +191,37 @@ def test_html_to_document_no_h1_yields_empty_title():
     title, sections = html_to_document("<h2>Body</h2><p>Text.</p>")
     assert title == ""
     assert sections[0]["heading"] == "Body"
+
+
+def test_markdown_document_round_trip():
+    # Realistic shape: every section has a heading -> exact round trip.
+    title = "Best VPS hosting 2026"
+    sections = [
+        {"heading": "Intro", "content": "Opening **line**.\n\nSecond paragraph."},
+        {"heading": "Checklist", "content": "- one\n- two"},
+    ]
+    md = document_to_markdown(title, sections)
+    assert md.startswith("# Best VPS hosting 2026")
+    assert "## Checklist" in md
+    t2, s2 = markdown_to_document(md)
+    assert t2 == title
+    assert s2 == sections
+
+
+def test_markdown_round_trip_with_leading_headingless_section():
+    title = "Guide"
+    sections = [
+        {"heading": None, "content": "Intro before any heading."},
+        {"heading": "Body", "content": "Section body."},
+    ]
+    t2, s2 = markdown_to_document(document_to_markdown(title, sections))
+    assert t2 == title
+    assert s2 == sections
+
+
+def test_markdown_to_document_no_h1_keeps_title_empty():
+    t, sections = markdown_to_document("## Body\n\nJust text.")
+    assert t == ""
+    assert sections == [{"heading": "Body", "content": "Just text."}]
 
 

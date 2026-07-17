@@ -2,7 +2,7 @@
   "manifest_schema_version": 3,
   "sdk_version": "5.9.3",
   "app_id": "imperal-article-writer-extension",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "name": "Article Writer",
   "description": "AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",
   "icon": "icon.svg",
@@ -1937,6 +1937,196 @@
         "type": "object"
       },
       "event": "article-writer.article.patched",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "read_full_article",
+      "description": "Read the ENTIRE article body as editable Markdown (# title, ## section headings, body in light markdown). Returns the full text to chat on purpose — call this before editing so you work from the real current text, never from memory. (To hand an article to another app like Mail/Notes, use export_article_text instead.) Use for: покажи полный текст статьи, дай отредактировать, read the whole article.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "article_id": {
+            "description": "Article ID from list_articles",
+            "title": "Article Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "article_id"
+        ],
+        "title": "ArticleIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "description": "Full article body as editable Markdown — the read side of Webbee's edit\nloop (read_full_article -> edit -> edit_full_article). Distinct from\nArticleFullText (export/send, html+text): this is the round-trippable\nMarkdown Webbee edits and resends.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "status": {
+            "default": "idea",
+            "title": "Status",
+            "type": "string"
+          },
+          "word_count": {
+            "default": 0,
+            "title": "Word Count",
+            "type": "integer"
+          },
+          "markdown": {
+            "default": "",
+            "title": "Markdown",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "ArticleTextRecord",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "edit_full_article",
+      "description": "Replace the ENTIRE article with your edited version as Markdown (# title, ## headings, body). Stores EXACTLY what you submit — nothing is re-generated — so first read_full_article, change only what's needed, and resend the COMPLETE text with every unchanged part preserved verbatim. For a small targeted change prefer patch_article. Use for: перепиши статью целиком, поправь текст статьи, edit the article.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:article"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "description": "Webbee's own full-text edit — the complete edited article as Markdown\n(leading `# ` = title, `## ` = section headings, body in light markdown).\nDistinct from patch_article (targeted one-section rewrite): this replaces\nthe whole document with exactly what you submit — nothing is re-generated,\nso preserve every unchanged part verbatim.",
+        "properties": {
+          "article_id": {
+            "description": "Article ID from list_articles",
+            "title": "Article Id",
+            "type": "string"
+          },
+          "content_markdown": {
+            "description": "The COMPLETE edited article as Markdown (# title, ## headings, body)",
+            "maxLength": 400000,
+            "minLength": 1,
+            "title": "Content Markdown",
+            "type": "string"
+          }
+        },
+        "required": [
+          "article_id",
+          "content_markdown"
+        ],
+        "title": "EditFullArticleParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "description": "Metadata only — DELIBERATELY no content/sections field. See module docstring.",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Title"
+          },
+          "status": {
+            "default": "idea",
+            "title": "Status",
+            "type": "string"
+          },
+          "target_keyword": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Target Keyword"
+          },
+          "meta_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Meta Description"
+          },
+          "word_count": {
+            "default": 0,
+            "title": "Word Count",
+            "type": "integer"
+          },
+          "seo_flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Seo Flags",
+            "type": "array"
+          },
+          "model_used": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Model Used"
+          }
+        },
+        "required": [
+          "id",
+          "project_id"
+        ],
+        "title": "ArticleSummary",
+        "type": "object"
+      },
+      "event": "article-writer.article.section_saved",
       "background": false,
       "long_running": false,
       "scopes": [],

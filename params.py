@@ -114,3 +114,14 @@ class SaveFullArticleParams(BaseModel):
     not something Webbee should ever construct from chat."""
     article_id: str = Field(...)
     content_html: str = Field(default="", max_length=400000)
+
+
+class EditFullArticleParams(BaseModel):
+    """Webbee's own full-text edit — the complete edited article as Markdown
+    (leading `# ` = title, `## ` = section headings, body in light markdown).
+    Distinct from patch_article (targeted one-section rewrite): this replaces
+    the whole document with exactly what you submit — nothing is re-generated,
+    so preserve every unchanged part verbatim."""
+    article_id: str = Field(..., description="Article ID from list_articles")
+    content_markdown: str = Field(..., min_length=1, max_length=400000,
+                                  description="The COMPLETE edited article as Markdown (# title, ## headings, body)")
