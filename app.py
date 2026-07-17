@@ -42,7 +42,7 @@ SERVER_URL = os.environ.get("ARTICLE_WRITER_BACKEND_URL", "") or "https://api.we
 
 ext = Extension(
     "imperal-article-writer-extension",
-    version="2.4.0",
+    version="2.4.1",
     display_name="Article Writer",
     description=(
         "Project-based SEO article writing: keep per-site context (keywords, brand voice, "
@@ -69,11 +69,11 @@ chat = ChatExtension(
         "list projects/articles (покажи проекты, покажи статьи), create an article and generate "
         "its draft (напиши статью, сгенерируй статью), check generation status, change article "
         "status (idea/writing/review/published). "
-        "PROACTIVE DATA: fill categories are free-form — right after a project is created (or "
-        "before writing), proactively offer to set up the reusable data THIS topic actually needs "
-        "and ask the user for it (e.g. product specs, promo codes, a local address/hours, key "
-        "stats). Store each item's real conditions in its note so the writer only states facts it "
-        "was given and never invents specifics. "
+        "PROACTIVE DATA: before generating, proactively gather the real facts THIS article needs "
+        "(prices, stats, product specs, quotes, dates) and pass them as source_snippets to "
+        "generate_article so every specific claim is grounded and nothing is invented; and collect "
+        "the site's own internal pages as reference_links (add_reference_link) for natural "
+        "interlinking. Ask the user for anything you can't source. "
         "EDITING: read the full text with read_full_article and rewrite it with edit_full_article "
         "(resend the complete text, changing only what's asked); for a small targeted change use "
         "patch_article; to hand the article to another app use export_article_text. The panel is "
