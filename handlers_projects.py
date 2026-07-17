@@ -48,7 +48,7 @@ def _links_response(project_id: str, links: list) -> ReferenceLinksResponse:
     "create_project",
     description=(
         "Create a new project — a container for one site's context: keywords, brand voice, "
-        "useful links, socials. Use for: создай проект, новый проект, add a new site/project, "
+        "useful links, socials. Use for: add a new site/project, "
         "start tracking a new website."
     ),
     action_type="write",
@@ -71,7 +71,7 @@ async def fn_create_project(ctx, params: CreateProjectParams) -> ActionResult:
 @chat.function(
     "list_projects",
     description=(
-        "List all projects (sites) — id, name, site url, keywords. Use for: покажи мои проекты, "
+        "List all projects (sites) — id, name, site url, keywords. Use for: "
         "list my projects, what sites do I have."
     ),
     action_type="read",
@@ -105,8 +105,8 @@ async def fn_list_projects(ctx, params: _EmptyParams) -> ActionResult:
     "update_project_context",
     description=(
         "Update a project's context — any of: name, site url, description, keywords, useful "
-        "links, social links, brand voice. Only send fields that changed. Use for: обнови "
-        "проект, add keywords to project, update brand voice, add a useful link."
+        "links, social links, brand voice. Only send fields that changed. Use for: "
+        "add keywords to project, update brand voice, add a useful link."
     ),
     action_type="write",
     event="article-writer.project.updated",
@@ -132,7 +132,7 @@ async def fn_update_project_context(ctx, params: UpdateProjectContextParams) -> 
 @chat.function(
     "delete_project",
     description=(
-        "Permanently delete a project and ALL its articles. Use for: удали проект, delete "
+        "Permanently delete a project and ALL its articles. Use for: delete "
         "this project, remove site."
     ),
     action_type="destructive",
@@ -164,8 +164,8 @@ async def fn_delete_project(ctx, params: ProjectIdParams) -> ActionResult:
         "keyword). The writer uses the description to weave a natural, in-sentence anchor when it "
         "links to the page — give a real topic, never just the brand name. Good sources to collect "
         "from: the site's top pages in Google Search Console, its tracked pages in SE Ranking, or "
-        "its sitemap. Use for: добавь ссылку для перелинковки, добавь страницу сайта для внутренних "
-        "ссылок, add an internal link for the writer, register a page for interlinking."
+        "its sitemap. Use for: "
+        "add an internal link for the writer, register a page for interlinking."
     ),
     action_type="write",
     event="article-writer.project.updated",
@@ -196,8 +196,8 @@ async def fn_add_reference_link(ctx, params: AddReferenceLinkParams) -> ActionRe
     "list_reference_links",
     description=(
         "List the internal reference links saved on a project (url + description) that the article "
-        "writer is allowed to link to. Use for: покажи ссылки для перелинковки, какие внутренние "
-        "ссылки есть, list reference links, what internal links can the writer use."
+        "writer is allowed to link to. Use for: "
+        "list reference links, what internal links can the writer use."
     ),
     action_type="read",
     chain_callable=True,
@@ -223,8 +223,8 @@ async def fn_list_reference_links(ctx, params: ProjectIdParams) -> ActionResult:
 @chat.function(
     "remove_reference_link",
     description=(
-        "Remove ONE internal reference link from a project by its URL. Use for: убери ссылку для "
-        "перелинковки, удали внутреннюю ссылку, remove a reference link, delete an internal link."
+        "Remove ONE internal reference link from a project by its URL. Use for: "
+        "remove a reference link, delete an internal link."
     ),
     action_type="destructive",
     event="article-writer.project.updated",

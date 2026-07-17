@@ -23,7 +23,7 @@ from response_models import GenerationJobResponse, GenerationStatusResponse, Pat
         "Start writing an article's first draft using the project's context plus a brief and "
         "any real source facts (from web search or other extensions) it must be grounded in. "
         "Runs in the background — call check_generation_status with the returned job_id to see "
-        "when it's done (status lands on 'review'). Use for: напиши статью, сгенерируй статью, "
+        "when it's done (status lands on 'review'). Use for: "
         "write the article, draft this article."
     ),
     action_type="write",
@@ -51,8 +51,8 @@ async def fn_generate_article(ctx, params: GenerateArticleParams) -> ActionResul
 @chat.function(
     "check_generation_status",
     description=(
-        "Check progress of a generate_article job — status, model used, cost. Use for: готова "
-        "ли статья, is the article done, check generation status."
+        "Check progress of a generate_article job — status, model used, cost. Use for: "
+        "is the article done, check generation status."
     ),
     action_type="read",
     chain_callable=True,
@@ -78,7 +78,7 @@ async def fn_check_generation_status(ctx, params: GenerationJobStatusParams) -> 
         "paragraph about delivery', 'make the intro punchier'). Locates the right section "
         "automatically, edits just that section, and recomputes word count/SEO flags — never "
         "touches the rest of the article. Returns a short preview, not the full body. Use for: "
-        "перепиши абзац про X, rewrite the section about X, fix the intro, tighten the "
+        "rewrite the section about X, fix the intro, tighten the "
         "conclusion."
     ),
     action_type="write",

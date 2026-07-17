@@ -27,8 +27,8 @@ from handlers_articles import _err, _to_summary
         "Read the ENTIRE article body as editable Markdown (# title, ## section headings, body in "
         "light markdown). Returns the full text to chat on purpose — call this before editing so "
         "you work from the real current text, never from memory. (To hand an article to another "
-        "app like Mail/Notes, use export_article_text instead.) Use for: покажи полный текст "
-        "статьи, дай отредактировать, read the whole article."
+        "app like Mail/Notes, use export_article_text instead.) Use for: "
+        "read the whole article."
     ),
     action_type="read",
     data_model=ArticleTextRecord,
@@ -53,7 +53,7 @@ async def fn_read_full_article(ctx, params: ArticleIdParams) -> ActionResult:
         "body). Stores EXACTLY what you submit — nothing is re-generated — so first "
         "read_full_article, change only what's needed, and resend the COMPLETE text with every "
         "unchanged part preserved verbatim. For a small targeted change prefer patch_article. "
-        "Use for: перепиши статью целиком, поправь текст статьи, edit the article."
+        "Use for: edit the article."
     ),
     action_type="write",
     event="article-writer.article.section_saved",

@@ -65,9 +65,9 @@ chat = ChatExtension(
     tool_name="article_writer",
     description=(
         "Article Writer — project-based SEO article writing. Use for: create/update a project's "
-        "context (keywords, brand voice, links, socials — создай проект, обнови контекст проекта), "
-        "list projects/articles (покажи проекты, покажи статьи), create an article and generate "
-        "its draft (напиши статью, сгенерируй статью), check generation status, change article "
+        "context (keywords, brand voice, links, socials), "
+        "list projects/articles, create an article and generate "
+        "its draft, check generation status, change article "
         "status (idea/writing/review/published). "
         "PROACTIVE DATA: before generating, proactively gather the real facts THIS article needs "
         "(prices, stats, product specs, quotes, dates) and pass them as source_snippets to "

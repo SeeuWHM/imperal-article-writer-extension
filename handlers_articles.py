@@ -53,7 +53,7 @@ def _to_summary(a: dict) -> ArticleSummary:
     "create_article",
     description=(
         "Create a new article shell under a project — just a title/keyword placeholder, no "
-        "content yet. Use for: создай статью, новая статья, add an article idea. Follow up "
+        "content yet. Use for: add an article idea. Follow up "
         "with generate_article to actually write it."
     ),
     action_type="write",
@@ -77,7 +77,7 @@ async def fn_create_article(ctx, params: CreateArticleParams) -> ActionResult:
     "list_articles",
     description=(
         "List articles (metadata only — id, title, status, word count, SEO flags — never the "
-        "full text). Optionally filter by project or status. Use for: покажи статьи, list "
+        "full text). Optionally filter by project or status. Use for: list "
         "articles, what's in review, show idea/writing/review/published articles."
     ),
     action_type="read",
@@ -118,7 +118,7 @@ async def fn_list_articles(ctx, params: ListArticlesParams) -> ActionResult:
     "update_article_status",
     description=(
         "Move an article to a new status: idea, writing, review, or published. Use for: "
-        "отметь статью как опубликованную, mark as review, move to writing."
+        "mark as review, move to writing."
     ),
     action_type="write",
     event="article-writer.article.status_changed",
@@ -142,7 +142,7 @@ async def fn_update_article_status(ctx, params: UpdateArticleStatusParams) -> Ac
         "Fix an article's SEO metadata — title, meta_description, and/or target_keyword — "
         "WITHOUT touching the article body/sections. This is the only way to clear a "
         "meta_description SEO flag (e.g. 'length outside 70-165') or correct the target "
-        "keyword after generation. Use for: исправь мета дескрипшн, fix the meta description, "
+        "keyword after generation. Use for: fix the meta description, "
         "update SEO title/keyword. To rewrite actual body text, use patch_article instead."
     ),
     action_type="write",
@@ -243,7 +243,7 @@ async def fn_save_full_article(ctx, params: SaveFullArticleParams) -> ActionResu
 
 @chat.function(
     "delete_article",
-    description="Permanently delete an article. Use for: удали статью, delete this article.",
+    description="Permanently delete an article. Use for: delete this article.",
     action_type="destructive",
     event="article-writer.article.deleted",
     effects=["delete:article"],

@@ -39,7 +39,7 @@
     },
     {
       "name": "create_project",
-      "description": "Create a new project — a container for one site's context: keywords, brand voice, useful links, socials. Use for: создай проект, новый проект, add a new site/project, start tracking a new website.",
+      "description": "Create a new project — a container for one site's context: keywords, brand voice, useful links, socials. Use for: add a new site/project, start tracking a new website.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -233,7 +233,7 @@
     },
     {
       "name": "list_projects",
-      "description": "List all projects (sites) — id, name, site url, keywords. Use for: покажи мои проекты, list my projects, what sites do I have.",
+      "description": "List all projects (sites) — id, name, site url, keywords. Use for: list my projects, what sites do I have.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
@@ -371,7 +371,7 @@
     },
     {
       "name": "update_project_context",
-      "description": "Update a project's context — any of: name, site url, description, keywords, useful links, social links, brand voice. Only send fields that changed. Use for: обнови проект, add keywords to project, update brand voice, add a useful link.",
+      "description": "Update a project's context — any of: name, site url, description, keywords, useful links, social links, brand voice. Only send fields that changed. Use for: add keywords to project, update brand voice, add a useful link.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -598,7 +598,7 @@
     },
     {
       "name": "delete_project",
-      "description": "Permanently delete a project and ALL its articles. Use for: удали проект, delete this project, remove site.",
+      "description": "Permanently delete a project and ALL its articles. Use for: delete this project, remove site.",
       "action_type": "destructive",
       "chain_callable": true,
       "effects": [
@@ -638,7 +638,7 @@
     },
     {
       "name": "add_reference_link",
-      "description": "Add ONE internal page of THIS project's own site as a reference link the article writer may link to, with a short description of what that page is about (its topic / target keyword). The writer uses the description to weave a natural, in-sentence anchor when it links to the page — give a real topic, never just the brand name. Good sources to collect from: the site's top pages in Google Search Console, its tracked pages in SE Ranking, or its sitemap. Use for: добавь ссылку для перелинковки, добавь страницу сайта для внутренних ссылок, add an internal link for the writer, register a page for interlinking.",
+      "description": "Add ONE internal page of THIS project's own site as a reference link the article writer may link to, with a short description of what that page is about (its topic / target keyword). The writer uses the description to weave a natural, in-sentence anchor when it links to the page — give a real topic, never just the brand name. Good sources to collect from: the site's top pages in Google Search Console, its tracked pages in SE Ranking, or its sitemap. Use for: add an internal link for the writer, register a page for interlinking.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -727,7 +727,7 @@
     },
     {
       "name": "list_reference_links",
-      "description": "List the internal reference links saved on a project (url + description) that the article writer is allowed to link to. Use for: покажи ссылки для перелинковки, какие внутренние ссылки есть, list reference links, what internal links can the writer use.",
+      "description": "List the internal reference links saved on a project (url + description) that the article writer is allowed to link to. Use for: list reference links, what internal links can the writer use.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
@@ -798,7 +798,7 @@
     },
     {
       "name": "remove_reference_link",
-      "description": "Remove ONE internal reference link from a project by its URL. Use for: убери ссылку для перелинковки, удали внутреннюю ссылку, remove a reference link, delete an internal link.",
+      "description": "Remove ONE internal reference link from a project by its URL. Use for: remove a reference link, delete an internal link.",
       "action_type": "destructive",
       "chain_callable": true,
       "effects": [
@@ -879,7 +879,7 @@
     },
     {
       "name": "create_article",
-      "description": "Create a new article shell under a project — just a title/keyword placeholder, no content yet. Use for: создай статью, новая статья, add an article idea. Follow up with generate_article to actually write it.",
+      "description": "Create a new article shell under a project — just a title/keyword placeholder, no content yet. Use for: add an article idea. Follow up with generate_article to actually write it.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1018,7 +1018,7 @@
     },
     {
       "name": "list_articles",
-      "description": "List articles (metadata only — id, title, status, word count, SEO flags — never the full text). Optionally filter by project or status. Use for: покажи статьи, list articles, what's in review, show idea/writing/review/published articles.",
+      "description": "List articles (metadata only — id, title, status, word count, SEO flags — never the full text). Optionally filter by project or status. Use for: list articles, what's in review, show idea/writing/review/published articles.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
@@ -1167,7 +1167,7 @@
     },
     {
       "name": "update_article_status",
-      "description": "Move an article to a new status: idea, writing, review, or published. Use for: отметь статью как опубликованную, mark as review, move to writing.",
+      "description": "Move an article to a new status: idea, writing, review, or published. Use for: mark as review, move to writing.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1285,7 +1285,7 @@
     },
     {
       "name": "update_article_meta",
-      "description": "Fix an article's SEO metadata — title, meta_description, and/or target_keyword — WITHOUT touching the article body/sections. This is the only way to clear a meta_description SEO flag (e.g. 'length outside 70-165') or correct the target keyword after generation. Use for: исправь мета дескрипшн, fix the meta description, update SEO title/keyword. To rewrite actual body text, use patch_article instead.",
+      "description": "Fix an article's SEO metadata — title, meta_description, and/or target_keyword — WITHOUT touching the article body/sections. This is the only way to clear a meta_description SEO flag (e.g. 'length outside 70-165') or correct the target keyword after generation. Use for: fix the meta description, update SEO title/keyword. To rewrite actual body text, use patch_article instead.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1554,7 +1554,7 @@
     },
     {
       "name": "delete_article",
-      "description": "Permanently delete an article. Use for: удали статью, delete this article.",
+      "description": "Permanently delete an article. Use for: delete this article.",
       "action_type": "destructive",
       "chain_callable": true,
       "effects": [
@@ -1669,7 +1669,7 @@
     },
     {
       "name": "generate_article",
-      "description": "Start writing an article's first draft using the project's context plus a brief and any real source facts (from web search or other extensions) it must be grounded in. Runs in the background — call check_generation_status with the returned job_id to see when it's done (status lands on 'review'). Use for: напиши статью, сгенерируй статью, write the article, draft this article.",
+      "description": "Start writing an article's first draft using the project's context plus a brief and any real source facts (from web search or other extensions) it must be grounded in. Runs in the background — call check_generation_status with the returned job_id to see when it's done (status lands on 'review'). Use for: write the article, draft this article.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1749,7 +1749,7 @@
     },
     {
       "name": "check_generation_status",
-      "description": "Check progress of a generate_article job — status, model used, cost. Use for: готова ли статья, is the article done, check generation status.",
+      "description": "Check progress of a generate_article job — status, model used, cost. Use for: is the article done, check generation status.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
@@ -1846,7 +1846,7 @@
     },
     {
       "name": "patch_article",
-      "description": "Rewrite ONE part of an article by natural-language instruction (e.g. 'rewrite the paragraph about delivery', 'make the intro punchier'). Locates the right section automatically, edits just that section, and recomputes word count/SEO flags — never touches the rest of the article. Returns a short preview, not the full body. Use for: перепиши абзац про X, rewrite the section about X, fix the intro, tighten the conclusion.",
+      "description": "Rewrite ONE part of an article by natural-language instruction (e.g. 'rewrite the paragraph about delivery', 'make the intro punchier'). Locates the right section automatically, edits just that section, and recomputes word count/SEO flags — never touches the rest of the article. Returns a short preview, not the full body. Use for: rewrite the section about X, fix the intro, tighten the conclusion.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1966,7 +1966,7 @@
     },
     {
       "name": "read_full_article",
-      "description": "Read the ENTIRE article body as editable Markdown (# title, ## section headings, body in light markdown). Returns the full text to chat on purpose — call this before editing so you work from the real current text, never from memory. (To hand an article to another app like Mail/Notes, use export_article_text instead.) Use for: покажи полный текст статьи, дай отредактировать, read the whole article.",
+      "description": "Read the ENTIRE article body as editable Markdown (# title, ## section headings, body in light markdown). Returns the full text to chat on purpose — call this before editing so you work from the real current text, never from memory. (To hand an article to another app like Mail/Notes, use export_article_text instead.) Use for: read the whole article.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
@@ -2034,7 +2034,7 @@
     },
     {
       "name": "edit_full_article",
-      "description": "Replace the ENTIRE article with your edited version as Markdown (# title, ## headings, body). Stores EXACTLY what you submit — nothing is re-generated — so first read_full_article, change only what's needed, and resend the COMPLETE text with every unchanged part preserved verbatim. For a small targeted change prefer patch_article. Use for: перепиши статью целиком, поправь текст статьи, edit the article.",
+      "description": "Replace the ENTIRE article with your edited version as Markdown (# title, ## headings, body). Stores EXACTLY what you submit — nothing is re-generated — so first read_full_article, change only what's needed, and resend the COMPLETE text with every unchanged part preserved verbatim. For a small targeted change prefer patch_article. Use for: edit the article.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
