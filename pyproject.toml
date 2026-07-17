@@ -3,7 +3,7 @@ name = "article-writer"
 version = "2.5.0"
 description = "Article Writer — project-based SEO article writing: per-site context, AI generation with grounded self-review, panel-only editing"
 requires-python = ">=3.11"
-dependencies = ["imperal-sdk>=5.9.9"]
+dependencies = ["imperal-sdk>=5.9.11"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]

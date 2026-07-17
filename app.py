@@ -83,6 +83,19 @@ chat = ChatExtension(
     max_rounds=10,
 )
 
+# File Mage L3 — declares this app as a valid destination when the user has
+# an uploaded file (via the file-reader system ext) and wants it turned into
+# an article. `arg="brief"` maps the file's EXTRACTED TEXT into the same
+# `brief` field a human would type — generate_article's own grounding/review
+# pipeline treats it exactly like any other brief, no bespoke ingestion path.
+ext.file_sink(
+    "generate_article",
+    accepts=["application/pdf", "text/*", "doc"],
+    arg="brief",
+    arg_kind="text",
+    description="Turn an uploaded document into a new SEO article draft",
+)
+
 ext.secret(
     name="backend_jwt",
     description=(

@@ -1,6 +1,6 @@
 {
   "manifest_schema_version": 3,
-  "sdk_version": "5.9.9",
+  "sdk_version": "5.9.11",
   "app_id": "imperal-article-writer-extension",
   "version": "2.5.0",
   "name": "Article Writer",
@@ -2304,6 +2304,19 @@
       "max_bytes": 2048,
       "scope": "app",
       "env_fallback": "IMPERAL_APPSECRET_ARTICLE_WRITER_BACKEND_JWT"
+    }
+  ],
+  "file_sinks": [
+    {
+      "tool": "generate_article",
+      "accepts": [
+        "application/pdf",
+        "text/*",
+        "doc"
+      ],
+      "arg": "brief",
+      "arg_kind": "text",
+      "description": "Turn an uploaded document into a new SEO article draft"
     }
   ],
   "panels": [
