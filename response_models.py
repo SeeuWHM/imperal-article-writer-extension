@@ -17,7 +17,7 @@ so Webbee needs a real, honest way to read the body when the user explicitly
 asks for one of those, rather than inventing placeholder text because every
 other function here structurally can't carry a body. Gated by description +
 by being its own single-purpose function, not by being reachable from
-list_articles/check_generation_status.
+list_articles.
 """
 from __future__ import annotations
 
@@ -80,15 +80,6 @@ class GenerationJobResponse(BaseModel):
     job_id: str
     article_id: str
     status: str = "queued"
-
-
-class GenerationStatusResponse(BaseModel):
-    job_id: str
-    status: str
-    model: Optional[str] = None
-    tokens_used: Optional[int] = None
-    cost_estimate: Optional[float] = None
-    error: Optional[str] = None
 
 
 class PatchResult(BaseModel):

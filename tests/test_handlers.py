@@ -26,7 +26,7 @@ from params import (
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
     UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
     SaveFullArticleParams,
-    GenerateArticleParams, GenerationJobStatusParams, PatchArticleParams,
+    GenerateArticleParams, PatchArticleParams,
 )
 from response_models import DeletedResponse
 
@@ -341,21 +341,6 @@ async def test_generate_article_returns_job(monkeypatch):
     assert result.status == "success"
     assert result.data.job_id == "job1"
     assert result.data.article_id == "a1"
-
-
-@pytest.mark.asyncio
-async def test_check_generation_status_success(monkeypatch):
-    async def fake_call(ctx, method, path, **kw):
-        assert path == "/v1/articles/a1/jobs/job1"
-        return {"id": "job1", "status": "done", "model": "claude-sonnet-5", "tokens_used": 4000}
-
-    monkeypatch.setattr(handlers_generate, "call_backend", fake_call)
-    result = await handlers_generate.fn_check_generation_status(
-        _ctx(), GenerationJobStatusParams(article_id="a1", job_id="job1"),
-    )
-    assert result.status == "success"
-    assert result.data.status == "done"
-    assert result.data.tokens_used == 4000
 
 
 @pytest.mark.asyncio

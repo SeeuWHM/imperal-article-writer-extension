@@ -1725,7 +1725,7 @@
     },
     {
       "name": "export_article_text",
-      "description": "Get the FULL article body — both as HTML (`html`: <h2>/<strong>/<ul> markup) and plain text (`text`) — so it can be handed to another extension or the user: sending it by email, saving it to a note, pasting it elsewhere. Use `html` with Mail's send()/reply() (is_html=true) or Notes' create_note content for real formatting; use `text` for a plain fallback. ONLY call this when the user explicitly asks to send/export/copy the article somewhere. Never call this for routine status checks, listing, or quality review — use list_articles / check_generation_status for those, which stay cheap on purpose.",
+      "description": "Get the FULL article body — both as HTML (`html`: <h2>/<strong>/<ul> markup) and plain text (`text`) — so it can be handed to another extension or the user: sending it by email, saving it to a note, pasting it elsewhere. Use `html` with Mail's send()/reply() (is_html=true) or Notes' create_note content for real formatting; use `text` for a plain fallback. ONLY call this when the user explicitly asks to send/export/copy the article somewhere. Never call this for routine status checks, listing, or quality review — use list_articles for those, which stays cheap on purpose.",
       "action_type": "read",
       "chain_callable": true,
       "effects": [],
@@ -1800,7 +1800,7 @@
     },
     {
       "name": "generate_article",
-      "description": "Start writing an article's first draft using the project's context plus a brief and any real source facts (from web search or other extensions) it must be grounded in. Runs in the background. To check when it's done: if you generated just this ONE article and want cost/model/error detail on THIS run, poll check_generation_status with the returned job_id; if you generated SEVERAL articles at once (or don't need per-run detail), it's simpler and more reliable to just call list_articles(status='review') a bit later instead of tracking every job_id — status lands on 'review' when ready either way. Use for: write the article, draft this article.",
+      "description": "Start writing an article's first draft using the project's context plus a brief and any real source facts (from web search or other extensions) it must be grounded in. Runs in the background — it does not block. To see when it's done, call list_articles(status='review') a bit later: an article's status lands on 'review' the moment its draft is ready, so that one call shows everything that finished — no job_id tracking needed. Use for: write the article, draft this article.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1873,103 +1873,6 @@
         "type": "object"
       },
       "event": "article-writer.article.generation_started",
-      "background": false,
-      "long_running": false,
-      "scopes": [],
-      "owner_chat_tool": "article_writer"
-    },
-    {
-      "name": "check_generation_status",
-      "description": "Check ONE specific generate_article job by its job_id — status, model used, cost, error detail. This needs the exact (article_id, job_id) pair from when you started it, so it does NOT scale well to checking several articles generated in the same turn — for that, call list_articles(status='review') instead, which needs no job_id at all and just shows what's actually ready right now. Use this one only when you genuinely need the per-run cost/model/error detail for a single job. Use for: check generation progress for this one job, what model/cost did this generation use.",
-      "action_type": "read",
-      "chain_callable": true,
-      "effects": [],
-      "id_projection": "",
-      "params_schema": {
-        "properties": {
-          "article_id": {
-            "title": "Article Id",
-            "type": "string"
-          },
-          "job_id": {
-            "title": "Job Id",
-            "type": "string"
-          }
-        },
-        "required": [
-          "article_id",
-          "job_id"
-        ],
-        "title": "GenerationJobStatusParams",
-        "type": "object"
-      },
-      "return_schema": {
-        "properties": {
-          "job_id": {
-            "title": "Job Id",
-            "type": "string"
-          },
-          "status": {
-            "title": "Status",
-            "type": "string"
-          },
-          "model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Model"
-          },
-          "tokens_used": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Tokens Used"
-          },
-          "cost_estimate": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Cost Estimate"
-          },
-          "error": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Error"
-          }
-        },
-        "required": [
-          "job_id",
-          "status"
-        ],
-        "title": "GenerationStatusResponse",
-        "type": "object"
-      },
-      "event": "",
       "background": false,
       "long_running": false,
       "scopes": [],

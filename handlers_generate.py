@@ -13,8 +13,8 @@ from imperal_sdk.types import ActionResult
 
 from app import chat
 from api_client import call_backend, _err, GENERATE_TIMEOUT, PATCH_TIMEOUT
-from params import GenerateArticleParams, GenerationJobStatusParams, PatchArticleParams
-from response_models import GenerationJobResponse, GenerationStatusResponse, PatchResult
+from params import GenerateArticleParams, PatchArticleParams
+from response_models import GenerationJobResponse, PatchResult
 
 
 @chat.function(
@@ -22,12 +22,10 @@ from response_models import GenerationJobResponse, GenerationStatusResponse, Pat
     description=(
         "Start writing an article's first draft using the project's context plus a brief and "
         "any real source facts (from web search or other extensions) it must be grounded in. "
-        "Runs in the background. To check when it's done: if you generated just this ONE article "
-        "and want cost/model/error detail on THIS run, poll check_generation_status with the "
-        "returned job_id; if you generated SEVERAL articles at once (or don't need per-run "
-        "detail), it's simpler and more reliable to just call list_articles(status='review') a bit "
-        "later instead of tracking every job_id — status lands on 'review' when ready either way. "
-        "Use for: write the article, draft this article."
+        "Runs in the background — it does not block. To see when it's done, call "
+        "list_articles(status='review') a bit later: an article's status lands on 'review' the "
+        "moment its draft is ready, so that one call shows everything that finished — no job_id "
+        "tracking needed. Use for: write the article, draft this article."
     ),
     action_type="write",
     event="article-writer.article.generation_started",
@@ -49,39 +47,11 @@ async def fn_generate_article(ctx, params: GenerateArticleParams) -> ActionResul
     return ActionResult.success(
         data=result,
         summary=(
-            f"Generation started (job {result.job_id}). Poll check_generation_status for this one "
-            "job, or just list_articles(status='review') later if you started several at once."
+            f"Generation started (job {result.job_id}). Call list_articles(status='review') a "
+            "little later to see it once the draft is ready."
         ),
         refresh_panels=["workspace"],
     )
-
-
-@chat.function(
-    "check_generation_status",
-    description=(
-        "Check ONE specific generate_article job by its job_id — status, model used, cost, error "
-        "detail. This needs the exact (article_id, job_id) pair from when you started it, so it "
-        "does NOT scale well to checking several articles generated in the same turn — for that, "
-        "call list_articles(status='review') instead, which needs no job_id at all and just shows "
-        "what's actually ready right now. Use this one only when you genuinely need the per-run "
-        "cost/model/error detail for a single job. Use for: check generation progress for this one "
-        "job, what model/cost did this generation use."
-    ),
-    action_type="read",
-    chain_callable=True,
-    data_model=GenerationStatusResponse,
-)
-async def fn_check_generation_status(ctx, params: GenerationJobStatusParams) -> ActionResult:
-    """Poll a generate_article job's status/cost."""
-    data = await call_backend(ctx, "GET", f"/v1/articles/{params.article_id}/jobs/{params.job_id}")
-    if "error" in data:
-        return _err(data)
-    result = GenerationStatusResponse(
-        job_id=data.get("id", params.job_id), status=data.get("status", "unknown"),
-        model=data.get("model"), tokens_used=data.get("tokens_used"),
-        cost_estimate=data.get("cost_estimate"), error=data.get("error"),
-    )
-    return ActionResult.success(data=result, summary=f"Job status: {result.status}.")
 
 
 @chat.function(

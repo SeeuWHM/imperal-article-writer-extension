@@ -35,7 +35,7 @@ Or use the panel — the left sidebar shows the currently-open project's full co
 | **Projects** | Create/list/update/delete a per-site context container: name, site URL, description, keywords, useful links, social links, brand voice |
 | **Interlinking** | Register internal pages of the project's own site (`add_reference_link`/`list_reference_links`/`remove_reference_link`) with a topic description; the backend's writer turns them into natural, in-sentence anchors |
 | **Articles** | Create an empty article shell, list by project/status, move through the `idea → writing → review → published` pipeline, fix SEO metadata (title/meta description/target keyword) without touching the body |
-| **AI generation** | `generate_article` enqueues the backend's async outline → draft → grounding → judge pipeline; `check_generation_status` polls it; `patch_article` rewrites one section by instruction, synchronously |
+| **AI generation** | `generate_article` enqueues the backend's async outline → draft → grounding → judge pipeline (check when it's done with `list_articles(status='review')`); `patch_article` rewrites one section by instruction, synchronously |
 | **Full-text editing** | `read_full_article`/`edit_full_article` — Webbee reads the whole article as Markdown and resends an edited version verbatim (nothing re-generated); `save_article_section` is a raw manual overwrite for pasted/dictated text |
 | **Export** | `export_article_text` hands the full body (both HTML and plain text) to another extension — email it, save it as a note, paste it elsewhere |
 | **Panel editing** | The workspace panel's single `ui.RichEditor` reads/writes the whole article directly via plain server-side HTTP calls — zero LLM tokens, any corpus size |
@@ -58,7 +58,7 @@ imperal-article-writer-extension/
 ├── skeleton.py           # @ext.skeleton: project/article counts by status + proactive ready-alert
 ├── handlers_projects.py  # create/list/update/delete/open project + reference-link CRUD
 ├── handlers_articles.py  # article metadata CRUD, save_article_section/save_full_article, export_article_text
-├── handlers_generate.py  # generate_article, check_generation_status, patch_article
+├── handlers_generate.py  # generate_article, patch_article
 ├── handlers_edit.py      # read_full_article, edit_full_article — Webbee's full-text read/edit loop
 ├── panels_side.py        # LEFT panel "sidebar": active-project detail + compact project switcher
 ├── panels_workspace.py   # CENTER panel "workspace": article board + single-editor article view
@@ -97,8 +97,7 @@ There is no cross-extension IPC anywhere in this codebase — this extension is 
 | `save_full_article` | write | Panel-only: replace the whole article from the merged editor |
 | `delete_article` | destructive | Permanently delete an article |
 | `export_article_text` | read | Return the full body as HTML + plain text, for handing to another extension |
-| `generate_article` | write | Enqueue the backend's full generation pipeline; returns a job to poll |
-| `check_generation_status` | read | Poll a generation job's status, model, tokens, cost |
+| `generate_article` | write | Enqueue the backend's full generation pipeline; check it's done with `list_articles(status='review')` |
 | `patch_article` | write | Rewrite one section by natural-language instruction; returns a short preview |
 | `read_full_article` | read | Return the entire article as editable Markdown |
 | `edit_full_article` | write | Replace the entire article with an edited Markdown version, stored verbatim |

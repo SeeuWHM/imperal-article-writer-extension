@@ -92,7 +92,7 @@ article-writer-extension/
 │                            reliable proactive-alert path — see "Proactivity" below)
 ├── handlers_projects.py  — project CRUD + reference links + open_project (sidebar-switch fix)
 ├── handlers_articles.py  — article CRUD, status/meta, save_section, save_full (panel), export
-├── handlers_generate.py  — generate_article, check_generation_status, patch_article
+├── handlers_generate.py  — generate_article, patch_article
 ├── handlers_edit.py      — read_full_article, edit_full_article (Webbee full-text read/edit)
 ├── panels_side.py        — LEFT "sidebar": active-project detail + compact project switcher
 ├── panels_workspace.py   — CENTER "workspace": article board + single-editor article view (H1 title)
@@ -105,7 +105,7 @@ Every file is under the 300-line limit.
 
 ---
 
-## Chat-function inventory (21 functions + 2 skeleton tools)
+## Chat-function inventory (20 functions + 2 skeleton tools)
 
 ### Projects (`handlers_projects.py`)
 - `create_project(name, site_url?, description?, keywords?, useful_links?, social_links?, brand_voice?)` — write
@@ -133,11 +133,12 @@ Every file is under the 300-line limit.
 
 ### Generation (`handlers_generate.py`)
 - `generate_article(article_id, brief, target_keyword?, source_snippets?)` — write, enqueues async
-  pipeline → `{job_id,…}`. Description now steers Webbee: for ONE article, poll
-  `check_generation_status`; for SEVERAL generated at once, just call `list_articles(status='review')`
-  later instead of tracking every job_id — simpler and doesn't need any per-job state.
-- `check_generation_status(article_id, job_id)` — read. Per-job cost/model/error detail; does not
-  scale to checking several articles from the same turn (needs the exact job_id pair) — see above.
+  pipeline → `{job_id,…}`. To check when it's done, call `list_articles(status='review')` a bit
+  later — an article's status lands on `review` the moment its draft is ready, so that one call shows
+  everything that finished with no job_id tracking. **`check_generation_status` was removed
+  (2026-07-18):** its `GET /v1/articles/{id}/jobs/{job_id}` job-poll endpoint returned an error in
+  production while the direct status-list path worked, so the broken duplicate was dropped in favour
+  of the one reliable path (Ignat's call).
 - `patch_article(article_id, instruction, section_hint?)` — write, synchronous, one-section NL
   rewrite. **Honesty fix (2026-07-18):** `PatchResult` now carries `matched`/`replaced_count`. If the
   locate step can't find a section actually containing the instruction's target — or the edit model
@@ -290,7 +291,7 @@ context tokens ∝ body size; everything else is cheap DB. Frequently-called lis
 stay cheapest.
 
 Current AW prices and my suggested adjustments:
-- `list_*`, `check_generation_status` = 10 ✓ (called constantly — keep cheapest)
+- `list_*` = 10 ✓ (called constantly — including as the generation-done check — keep cheapest)
 - `create/update/delete/status/meta`, reference-link ops = 10–30 ✓
 - `open_project` [NEW] → **0/free** — pure UI navigation, no LLM, no meaningful backend cost (one
   cheap GET); matches the "PANEL-ONLY" functions' free-tier intent below

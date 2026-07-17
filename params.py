@@ -117,11 +117,6 @@ class GenerateArticleParams(BaseModel):
     )
 
 
-class GenerationJobStatusParams(BaseModel):
-    article_id: EntityId = Field(...)
-    job_id: EntityId = Field(...)
-
-
 class PatchArticleParams(BaseModel):
     article_id: EntityId = Field(...)
     instruction: str = Field(..., min_length=1, max_length=2000, description="e.g. 'rewrite the paragraph about delivery'")

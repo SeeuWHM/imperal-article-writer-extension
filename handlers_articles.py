@@ -268,8 +268,7 @@ async def fn_delete_article(ctx, params: ArticleIdParams) -> ActionResult:
         "(is_html=true) or Notes' create_note content for real formatting; use `text` for a "
         "plain fallback. ONLY call this when the user explicitly asks to send/export/copy the "
         "article somewhere. Never call this for routine status checks, listing, or quality "
-        "review — use list_articles / check_generation_status for those, which stay cheap on "
-        "purpose."
+        "review — use list_articles for those, which stays cheap on purpose."
     ),
     action_type="read",
     data_model=ArticleFullText,
