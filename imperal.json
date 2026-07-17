@@ -2,7 +2,7 @@
   "manifest_schema_version": 3,
   "sdk_version": "5.9.3",
   "app_id": "imperal-article-writer-extension",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "name": "Article Writer",
   "description": "AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",
   "icon": "icon.svg",
@@ -21,6 +21,21 @@
       "description": "Article Writer projects + article counts by status — degrades to zeros if backend unreachable",
       "scopes": [],
       "parameters": {}
+    },
+    {
+      "name": "skeleton_alert_article_writer_overview",
+      "description": "Fires when an article finishes generating and lands in 'review' — proactive 'your article is ready' notice.",
+      "scopes": [],
+      "parameters": {
+        "old": {
+          "type": "string",
+          "required": false
+        },
+        "new": {
+          "type": "string",
+          "required": false
+        }
+      }
     },
     {
       "name": "create_project",

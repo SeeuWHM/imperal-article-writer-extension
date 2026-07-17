@@ -9,7 +9,7 @@ from app import ext
 from api_client import call_backend
 
 
-@ext.skeleton("article_writer_overview", ttl=60,
+@ext.skeleton("article_writer_overview", ttl=60, alert=True,
               description="Article Writer projects + article counts by status — degrades to zeros if backend unreachable")
 async def skeleton_refresh_overview(ctx) -> dict:
     projects_data = await call_backend(ctx, "GET", "/v1/projects", params={"limit": 100, "offset": 0})
@@ -31,6 +31,16 @@ async def skeleton_refresh_overview(ctx) -> dict:
         s = a.get("status", "idea")
         by_status[s] = by_status.get(s, 0) + 1
 
+    # Title of the most-recently-updated article sitting in "review" — this is
+    # what a just-finished generation lands as. The paired alert tool fires
+    # when the review count goes up and names this one, so Webbee can
+    # proactively tell the user "<title> is ready" the moment it's written.
+    review_items = [a for a in articles if a.get("status") == "review"]
+    latest_ready = ""
+    if review_items:
+        newest = max(review_items, key=lambda a: a.get("updated_at") or "")
+        latest_ready = (newest.get("title") or newest.get("target_keyword") or "(untitled)")[:60]
+
     if not projects and "error" in projects_data:
         instruction = (
             "Article Writer backend is unreachable right now — tell the user generation/project "
@@ -50,5 +60,31 @@ async def skeleton_refresh_overview(ctx) -> dict:
         "project_count": project_count,
         "article_count": article_count,
         "by_status": by_status,
+        "latest_ready": latest_ready,
         "instruction": instruction,
     }}
+
+
+@ext.tool(
+    "skeleton_alert_article_writer_overview",
+    description="Fires when an article finishes generating and lands in 'review' — proactive 'your article is ready' notice.",
+)
+async def skeleton_alert_article_writer_overview(ctx, old: dict | None = None, new: dict | None = None) -> dict:
+    """Compare the previous vs current skeleton snapshot; if the number of
+    articles in 'review' went up, a generation just finished — return a short
+    notice naming the newest one so Webbee tells the user proactively.
+    Returns {"response": ""} (no alert) on first snapshot or no change."""
+    try:
+        if not old or not new:
+            return {"response": ""}
+        old_review = int((old.get("by_status") or {}).get("review", 0))
+        new_review = int((new.get("by_status") or {}).get("review", 0))
+        if new_review <= old_review:
+            return {"response": ""}
+        latest = (new.get("latest_ready") or "").strip()
+        added = new_review - old_review
+        if latest and added == 1:
+            return {"response": f'Your article "{latest}" is written and ready for review in the Article Writer panel.'}
+        return {"response": f"{added} articles just finished and are ready for review in the Article Writer panel."}
+    except Exception:
+        return {"response": ""}

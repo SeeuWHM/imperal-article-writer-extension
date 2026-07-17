@@ -42,7 +42,7 @@ SERVER_URL = os.environ.get("ARTICLE_WRITER_BACKEND_URL", "") or "https://api.we
 
 ext = Extension(
     "imperal-article-writer-extension",
-    version="2.2.0",
+    version="2.3.0",
     display_name="Article Writer",
     description=(
         "Project-based SEO article writing: keep per-site context (keywords, brand voice, "
