@@ -2,7 +2,7 @@
   "manifest_schema_version": 3,
   "sdk_version": "5.9.3",
   "app_id": "imperal-article-writer-extension",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "name": "Article Writer",
   "description": "AI-powered WordPress content studio: keyword research, SE Rankings tracking, AI article writing with SEO optimization, and one-click publishing to WordPress.",
   "icon": "icon.svg",
@@ -110,6 +110,25 @@
         "type": "object"
       },
       "return_schema": {
+        "$defs": {
+          "ReferenceLinkRecord": {
+            "description": "One internal page the article writer may link to. `description` = what the\npage is about / its target topic; the writer turns it into a natural,\nin-sentence anchor phrase (never the bare brand/domain).",
+            "properties": {
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "title": "ReferenceLinkRecord",
+            "type": "object"
+          }
+        },
         "properties": {
           "id": {
             "title": "Id",
@@ -163,6 +182,13 @@
               "type": "string"
             },
             "title": "Social Links",
+            "type": "array"
+          },
+          "reference_links": {
+            "items": {
+              "$ref": "#/$defs/ReferenceLinkRecord"
+            },
+            "title": "Reference Links",
             "type": "array"
           },
           "brand_voice": {
@@ -261,6 +287,13 @@
                 "title": "Social Links",
                 "type": "array"
               },
+              "reference_links": {
+                "items": {
+                  "$ref": "#/$defs/ReferenceLinkRecord"
+                },
+                "title": "Reference Links",
+                "type": "array"
+              },
               "brand_voice": {
                 "anyOf": [
                   {
@@ -278,6 +311,23 @@
               "id"
             ],
             "title": "ProjectRecord",
+            "type": "object"
+          },
+          "ReferenceLinkRecord": {
+            "description": "One internal page the article writer may link to. `description` = what the\npage is about / its target topic; the writer turns it into a natural,\nin-sentence anchor phrase (never the bare brand/domain).",
+            "properties": {
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "title": "ReferenceLinkRecord",
             "type": "object"
           }
         },
@@ -425,6 +475,25 @@
         "type": "object"
       },
       "return_schema": {
+        "$defs": {
+          "ReferenceLinkRecord": {
+            "description": "One internal page the article writer may link to. `description` = what the\npage is about / its target topic; the writer turns it into a natural,\nin-sentence anchor phrase (never the bare brand/domain).",
+            "properties": {
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "title": "ReferenceLinkRecord",
+            "type": "object"
+          }
+        },
         "properties": {
           "id": {
             "title": "Id",
@@ -478,6 +547,13 @@
               "type": "string"
             },
             "title": "Social Links",
+            "type": "array"
+          },
+          "reference_links": {
+            "items": {
+              "$ref": "#/$defs/ReferenceLinkRecord"
+            },
+            "title": "Reference Links",
             "type": "array"
           },
           "brand_voice": {
@@ -540,6 +616,247 @@
         "type": "object"
       },
       "event": "article-writer.project.deleted",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "add_reference_link",
+      "description": "Add ONE internal page of THIS project's own site as a reference link the article writer may link to, with a short description of what that page is about (its topic / target keyword). The writer uses the description to weave a natural, in-sentence anchor when it links to the page — give a real topic, never just the brand name. Good sources to collect from: the site's top pages in Google Search Console, its tracked pages in SE Ranking, or its sitemap. Use for: добавь ссылку для перелинковки, добавь страницу сайта для внутренних ссылок, add an internal link for the writer, register a page for interlinking.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:project"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "project_id": {
+            "description": "Project ID from list_projects",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "url": {
+            "description": "URL of an internal page on THIS project's own site",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          },
+          "description": {
+            "description": "What that page is about / its topic — the writer uses it to build a natural link anchor",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id",
+          "url",
+          "description"
+        ],
+        "title": "AddReferenceLinkParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ReferenceLinkRecord": {
+            "description": "One internal page the article writer may link to. `description` = what the\npage is about / its target topic; the writer turns it into a natural,\nin-sentence anchor phrase (never the bare brand/domain).",
+            "properties": {
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "title": "ReferenceLinkRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/$defs/ReferenceLinkRecord"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "title": "ReferenceLinksResponse",
+        "type": "object"
+      },
+      "event": "article-writer.project.updated",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "list_reference_links",
+      "description": "List the internal reference links saved on a project (url + description) that the article writer is allowed to link to. Use for: покажи ссылки для перелинковки, какие внутренние ссылки есть, list reference links, what internal links can the writer use.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "project_id": {
+            "description": "Project ID from list_projects",
+            "title": "Project Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "title": "ProjectIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ReferenceLinkRecord": {
+            "description": "One internal page the article writer may link to. `description` = what the\npage is about / its target topic; the writer turns it into a natural,\nin-sentence anchor phrase (never the bare brand/domain).",
+            "properties": {
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "title": "ReferenceLinkRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/$defs/ReferenceLinkRecord"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "title": "ReferenceLinksResponse",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "article_writer"
+    },
+    {
+      "name": "remove_reference_link",
+      "description": "Remove ONE internal reference link from a project by its URL. Use for: убери ссылку для перелинковки, удали внутреннюю ссылку, remove a reference link, delete an internal link.",
+      "action_type": "destructive",
+      "chain_callable": true,
+      "effects": [
+        "update:project"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "project_id": {
+            "description": "Project ID from list_projects",
+            "title": "Project Id",
+            "type": "string"
+          },
+          "url": {
+            "description": "URL of the reference link to remove",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "project_id",
+          "url"
+        ],
+        "title": "RemoveReferenceLinkParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ReferenceLinkRecord": {
+            "description": "One internal page the article writer may link to. `description` = what the\npage is about / its target topic; the writer turns it into a natural,\nin-sentence anchor phrase (never the bare brand/domain).",
+            "properties": {
+              "url": {
+                "default": "",
+                "title": "Url",
+                "type": "string"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              }
+            },
+            "title": "ReferenceLinkRecord",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "project_id": {
+            "title": "Project Id",
+            "type": "string"
+          },
+          "links": {
+            "items": {
+              "$ref": "#/$defs/ReferenceLinkRecord"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "project_id"
+        ],
+        "title": "ReferenceLinksResponse",
+        "type": "object"
+      },
+      "event": "article-writer.project.updated",
       "background": false,
       "long_running": false,
       "scopes": [],
@@ -1176,7 +1493,7 @@
     },
     {
       "name": "save_full_article",
-      "description": "PANEL-ONLY: replace the entire article body from the panel's single merged editor. Splits the submitted document into sections at heading boundaries — this is the one path that lets a section be added/removed/reordered by editing headings directly. Not for chat use — Webbee should use generate_article or patch_article to write content.",
+      "description": "PANEL-ONLY: replace the entire article from the panel's single merged editor. The leading <h1> is the title; everything after it splits into sections at heading boundaries. Persists BOTH the title and the body in one save — this is the one path that lets the title or a section be edited/added/removed/reordered by editing the document directly. Not for chat use — Webbee should use generate_article or patch_article to write content.",
       "action_type": "write",
       "chain_callable": true,
       "effects": [
@@ -1614,7 +1931,7 @@
   "signals": [],
   "schedules": [],
   "required_scopes": [],
-  "icon_size_bytes": 317,
+  "icon_size_bytes": 301,
   "lifecycle": {
     "health_check": {
       "interval_sec": 60

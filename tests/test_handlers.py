@@ -216,24 +216,55 @@ async def test_save_article_section_success(monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_save_full_article_splits_by_heading(monkeypatch):
+async def test_save_full_article_splits_title_and_sections(monkeypatch):
+    captured = {}
+
     async def fake_call(ctx, method, path, **kw):
-        assert method == "PUT" and path == "/v1/articles/a1/sections"
-        assert kw["json"] == {"sections": [
-            {"heading": "Intro", "content": "Hello there."},
-            {"heading": "Conclusion", "content": "The end."},
-        ]}
-        return {}
+        if method == "PUT" and path == "/v1/articles/a1/sections":
+            captured["sections"] = kw["json"]["sections"]
+            return {}
+        if method == "PATCH" and path == "/v1/articles/a1/meta":
+            captured["title"] = kw["json"]["title"]
+            return {}
+        raise AssertionError(f"unexpected call {method} {path}")
 
     monkeypatch.setattr(handlers_articles, "call_backend", fake_call)
     result = await handlers_articles.fn_save_full_article(
         _ctx(),
         SaveFullArticleParams(
             article_id="a1",
-            content_html="<h2>Intro</h2><p>Hello there.</p><h2>Conclusion</h2><p>The end.</p>",
+            content_html=(
+                "<h1>My Guide</h1>"
+                "<h2>Intro</h2><p>Hello there.</p><h2>Conclusion</h2><p>The end.</p>"
+            ),
         ),
     )
     assert result.status == "success"
+    # The leading <h1> is the title, persisted via /meta.
+    assert captured["title"] == "My Guide"
+    assert captured["sections"] == [
+        {"heading": "Intro", "content": "Hello there."},
+        {"heading": "Conclusion", "content": "The end."},
+    ]
+
+
+@pytest.mark.asyncio
+async def test_save_full_article_without_h1_keeps_title(monkeypatch):
+    calls = []
+
+    async def fake_call(ctx, method, path, **kw):
+        calls.append((method, path))
+        return {}
+
+    monkeypatch.setattr(handlers_articles, "call_backend", fake_call)
+    # No leading <h1> -> title must NOT be touched (no PATCH /meta call).
+    result = await handlers_articles.fn_save_full_article(
+        _ctx(),
+        SaveFullArticleParams(article_id="a1", content_html="<h2>Intro</h2><p>Body.</p>"),
+    )
+    assert result.status == "success"
+    assert ("PUT", "/v1/articles/a1/sections") in calls
+    assert ("PATCH", "/v1/articles/a1/meta") not in calls
 
 
 @pytest.mark.asyncio

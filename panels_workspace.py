@@ -19,7 +19,7 @@ from imperal_sdk import ui
 
 from app import ext
 from api_client import call_backend
-from richtext import sections_to_html
+from richtext import document_to_html
 from navstate import load_nav, save_nav
 
 STATUS_ORDER = ["idea", "writing", "review", "published"]
@@ -69,17 +69,19 @@ async def _render_articles_view(ctx, project_id: str) -> ui.UINode:
     return ui.Grid(columns=len(STATUS_ORDER), gap=3, children=columns)
 
 
-def _article_editor(article_id: str, sections: list[dict]) -> ui.UINode:
-    """One seamless editable document — headings are real <h2>s inside the
-    same RichEditor, not separate boxes. Saving splits it back into sections
-    at heading boundaries (richtext.html_to_sections), so adding/removing/
-    reordering a heading here is how sections get added/removed/reordered."""
+def _article_editor(article_id: str, title: str, sections: list[dict]) -> ui.UINode:
+    """One seamless editable document — the TITLE is the leading <h1> and each
+    section heading is an <h2>, all inside the same RichEditor. No separate
+    title field: Save writes the whole thing at once — the first <h1> becomes
+    the title, the rest becomes the sections (richtext.html_to_document), so
+    adding/removing/reordering a heading here is how the title/sections get
+    edited."""
     return ui.Form(
         action="save_full_article",
         submit_label="Save article",
         defaults={"article_id": article_id},
         children=[
-            ui.RichEditor(param_name="content_html", content=sections_to_html(sections)),
+            ui.RichEditor(param_name="content_html", content=document_to_html(title, sections)),
         ],
     )
 
@@ -129,7 +131,14 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
         ],
     )
 
+    # The title lives INSIDE the editor as the leading <h1> — no separate
+    # title field. Only show a standalone header before generation (nothing to
+    # edit yet); once sections exist, the editor's <h1> is the title.
+    header_nodes: list = []
     if not sections:
+        header_nodes.append(
+            ui.Header(text=data.get("title") or data.get("target_keyword") or "(untitled)", level=4)
+        )
         body = ui.Form(
             action="generate_article", submit_label="Generate first draft",
             defaults={"article_id": article_id},
@@ -145,15 +154,14 @@ async def _render_article_view(ctx, project_id: str, article_id: str) -> ui.UINo
         # No "Patch with AI" form — that's Webbee's job via chat
         # (patch_article); this panel edits directly, it doesn't duplicate
         # Webbee's own AI-writing actions.
-        body = _article_editor(article_id, sections)
+        body = _article_editor(article_id, data.get("title") or "", sections)
 
-    # Flat vertical document: action bar → title → badges → status control →
-    # divider → body. No nested horizontal flex holding a Form (that was what
-    # made the header elements pile on top of each other). className mirrors
-    # mail-client's viewer so content isn't flush against the panel edge.
+    # Flat vertical document: action bar → [header before generation] → badges
+    # → status control → divider → body. className mirrors mail-client's viewer
+    # so content isn't flush against the panel edge.
     return ui.Stack(gap=3, className="px-4 pb-4", children=[
         top_bar,
-        ui.Header(text=data.get("title") or data.get("target_keyword") or "(untitled)", level=4),
+        *header_nodes,
         badges,
         status_form,
         ui.Divider(),

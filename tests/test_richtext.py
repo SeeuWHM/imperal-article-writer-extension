@@ -7,7 +7,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from richtext import to_html, from_html, sections_to_html, html_to_sections, to_export_text
+from richtext import (
+    to_html, from_html, sections_to_html, html_to_sections, to_export_text,
+    document_to_html, html_to_document,
+)
 
 
 def test_to_html_wraps_paragraphs():
@@ -154,5 +157,39 @@ def test_to_export_text_strips_markdown_and_headlines_sections():
 
 def test_to_export_text_handles_headingless_section():
     assert to_export_text([{"heading": None, "content": "Just text."}]) == "Just text."
+
+
+def test_document_to_html_puts_title_as_leading_h1():
+    sections = [{"heading": "Intro", "content": "Hello."}]
+    assert document_to_html("My Title", sections) == "<h1>My Title</h1><h2>Intro</h2><p>Hello.</p>"
+
+
+def test_document_to_html_no_title_is_body_only():
+    assert document_to_html("", [{"heading": None, "content": "Hi."}]) == "<p>Hi.</p>"
+
+
+def test_html_to_document_extracts_title_and_sections():
+    html = "<h1>My Title</h1><h2>Intro</h2><p>Hello **there**.</p><h2>More</h2><p>Body.</p>"
+    title, sections = html_to_document(html)
+    assert title == "My Title"
+    assert [s["heading"] for s in sections] == ["Intro", "More"]
+    assert sections[0]["content"] == "Hello **there**."
+
+
+def test_html_to_document_round_trips_with_document_to_html():
+    title = "Choosing hosting"
+    sections = [
+        {"heading": "Intro", "content": "Opening line."},
+        {"heading": "Checklist", "content": "- one\n- two"},
+    ]
+    t2, s2 = html_to_document(document_to_html(title, sections))
+    assert t2 == title
+    assert s2 == sections
+
+
+def test_html_to_document_no_h1_yields_empty_title():
+    title, sections = html_to_document("<h2>Body</h2><p>Text.</p>")
+    assert title == ""
+    assert sections[0]["heading"] == "Body"
 
 

@@ -16,9 +16,15 @@ async def skeleton_refresh_overview(ctx) -> dict:
     projects = projects_data.get("data") if isinstance(projects_data.get("data"), list) else []
     projects = projects or []
 
-    articles_data = await call_backend(ctx, "GET", "/v1/articles", params={"limit": 200, "offset": 0})
+    # limit must be <= 100 (backend caps it via Query(le=100)); 200 returned a
+    # 422 every refresh, so article counts never populated. Use the paged
+    # `total` for the true count regardless of page size.
+    articles_data = await call_backend(ctx, "GET", "/v1/articles", params={"limit": 100, "offset": 0})
     articles = articles_data.get("data") if isinstance(articles_data.get("data"), list) else []
     articles = articles or []
+
+    project_count = projects_data.get("total", len(projects)) if isinstance(projects_data, dict) else len(projects)
+    article_count = articles_data.get("total", len(articles)) if isinstance(articles_data, dict) else len(articles)
 
     by_status = {"idea": 0, "writing": 0, "review": 0, "published": 0}
     for a in articles:
@@ -34,15 +40,15 @@ async def skeleton_refresh_overview(ctx) -> dict:
         instruction = "No projects yet — create one with create_project before writing articles."
     else:
         instruction = (
-            f"{len(projects)} project(s), {len(articles)} article(s) total: "
+            f"{project_count} project(s), {article_count} article(s) total: "
             + ", ".join(f"{v} {k}" for k, v in by_status.items())
             + ". Use list_projects/list_articles for details, generate_article to write, "
               "patch_article to edit a specific part."
         )
 
     return {"response": {
-        "project_count": len(projects),
-        "article_count": len(articles),
+        "project_count": project_count,
+        "article_count": article_count,
         "by_status": by_status,
         "instruction": instruction,
     }}

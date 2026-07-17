@@ -29,7 +29,7 @@ from imperal_sdk.types import ActionResult
 
 from app import chat
 from api_client import call_backend
-from richtext import from_html, html_to_sections, sections_to_html, to_export_text
+from richtext import from_html, html_to_document, sections_to_html, to_export_text
 from params import (
     CreateArticleParams, ListArticlesParams, ArticleIdParams,
     UpdateArticleStatusParams, UpdateArticleMetaParams, SaveArticleSectionParams,
@@ -207,9 +207,11 @@ async def fn_save_article_section(ctx, params: SaveArticleSectionParams) -> Acti
 @chat.function(
     "save_full_article",
     description=(
-        "PANEL-ONLY: replace the entire article body from the panel's single merged editor. "
-        "Splits the submitted document into sections at heading boundaries — this is the one "
-        "path that lets a section be added/removed/reordered by editing headings directly. "
+        "PANEL-ONLY: replace the entire article from the panel's single merged editor. The "
+        "leading <h1> is the title; everything after it splits into sections at heading "
+        "boundaries. Persists BOTH the title and the body in one save — this is the one path "
+        "that lets the title or a section be edited/added/removed/reordered by editing the "
+        "document directly. "
         "Not for chat use — Webbee should use generate_article or patch_article to write content."
     ),
     action_type="write",
@@ -218,14 +220,23 @@ async def fn_save_article_section(ctx, params: SaveArticleSectionParams) -> Acti
     data_model=DeletedResponse,
 )
 async def fn_save_full_article(ctx, params: SaveFullArticleParams) -> ActionResult:
-    """Panel's single-editor Save — split the merged HTML back into sections."""
-    sections = html_to_sections(params.content_html)
+    """Panel's single-editor Save — split the merged HTML into title (<h1>) +
+    body sections, and persist both."""
+    title, sections = html_to_document(params.content_html)
     data = await call_backend(
         ctx, "PUT", f"/v1/articles/{params.article_id}/sections",
         json={"sections": sections},
     )
     if "error" in data:
         return _err(data)
+    # Persist the title too (never blank it — if the editor has no leading
+    # <h1>, keep whatever title the backend already has).
+    if title:
+        meta = await call_backend(
+            ctx, "PATCH", f"/v1/articles/{params.article_id}/meta", json={"title": title},
+        )
+        if isinstance(meta, dict) and "error" in meta:
+            return _err(meta)
     return ActionResult.success(
         data=DeletedResponse(deleted=False), summary="Article saved.", refresh_panels=["workspace"],
     )

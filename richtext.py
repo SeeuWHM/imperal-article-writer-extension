@@ -26,6 +26,7 @@ _HTML_BLOCK = re.compile(r"<p>.*?</p>|<ul>.*?</ul>|<ol>.*?</ol>", re.DOTALL)
 # plain-text `heading` column) — sections_to_html always re-emits h2.
 _HTML_HEADING = re.compile(r"<h[123]>(.*?)</h[123]>", re.DOTALL)
 _HTML_HEADING_SPLIT = re.compile(r"(<h[123]>.*?</h[123]>)", re.DOTALL)
+_HTML_H1 = re.compile(r"<h1>(.*?)</h1>", re.DOTALL)
 
 
 def _inline_to_html(text: str) -> str:
@@ -168,3 +169,32 @@ def html_to_sections(html: str) -> list[dict]:
     if heading is not None or body.strip():
         sections.append({"heading": heading, "content": from_html(body)})
     return sections
+
+
+def document_to_html(title: str, sections: list[dict]) -> str:
+    """The WHOLE article as one editor document: the title is the leading
+    <h1>, then the body (each section's heading as <h2>, content as prose).
+    The title lives inside the same editor as everything else — there is no
+    separate title field in the panel."""
+    title = (title or "").strip()
+    parts = []
+    if title:
+        parts.append(f"<h1>{title}</h1>")
+    parts.append(sections_to_html(sections))
+    return "".join(parts)
+
+
+def html_to_document(html: str) -> tuple[str, list[dict]]:
+    """Inverse of document_to_html: the FIRST <h1> is the title; everything
+    after it splits into {heading, content} sections (at <h2>/<h3> boundaries).
+    Returns (title, sections). title is "" when the document has no leading
+    <h1> — the caller must then keep the existing title rather than blank it."""
+    if not html or not html.strip():
+        return "", []
+    m = _HTML_H1.search(html)
+    title = ""
+    rest = html
+    if m:
+        title = _unescape(_HTML_TAG.sub("", m.group(1))).strip()
+        rest = html[:m.start()] + html[m.end():]
+    return title, html_to_sections(rest)
