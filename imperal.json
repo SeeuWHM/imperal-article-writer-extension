@@ -1,6 +1,6 @@
 {
   "manifest_schema_version": 3,
-  "sdk_version": "5.9.11",
+  "sdk_version": "5.9.12",
   "app_id": "imperal-article-writer-extension",
   "version": "2.5.0",
   "name": "Article Writer",
