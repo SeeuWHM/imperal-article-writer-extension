@@ -42,7 +42,7 @@ SERVER_URL = os.environ.get("ARTICLE_WRITER_BACKEND_URL", "") or "https://api.we
 
 ext = Extension(
     "imperal-article-writer-extension",
-    version="2.5.0",
+    version="2.6.0",
     display_name="Article Writer",
     description=(
         "Project-based SEO article writing: keep per-site context (keywords, brand voice, "
@@ -114,3 +114,7 @@ async def health(ctx) -> dict:
     """Report whether the backend JWT is configured."""
     jwt = await ctx.secrets.get("backend_jwt")
     return {"status": "ok" if jwt else "degraded", "version": ext.version}
+
+
+from cache_helpers import CachedBackendPayload  # noqa: E402
+ext.cache_model("article_writer_backend_payload")(CachedBackendPayload)

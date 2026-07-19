@@ -9,6 +9,7 @@ sys.path.insert(0, _dir)
 
 for _m in list(sys.modules):
     if _m in ("app", "api_client", "params", "response_models", "richtext", "navstate", "skeleton",
+              "cache_helpers",
               "handlers_projects", "handlers_articles", "handlers_generate", "handlers_edit",
               "panels_side", "panels_workspace"):
         del sys.modules[_m]

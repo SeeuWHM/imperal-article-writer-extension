@@ -19,6 +19,7 @@ from imperal_sdk import ui
 
 from app import ext
 from api_client import call_backend
+from cache_helpers import LIST_CACHE_TTL, cached_call
 from richtext import document_to_html
 from navstate import load_nav, save_nav
 
@@ -35,7 +36,10 @@ async def _render_articles_view(ctx, project_id: str) -> ui.UINode:
     if not project_id:
         return ui.Empty(message="Pick a project on the left, or create one, to see its articles.")
 
-    data = await call_backend(ctx, "GET", "/v1/articles", params={"project_id": project_id, "limit": 100, "offset": 0})
+    data = await cached_call(
+        ctx, "articles_board", ctx.user.imperal_id, {"project_id": project_id}, LIST_CACHE_TTL,
+        lambda: call_backend(ctx, "GET", "/v1/articles", params={"project_id": project_id, "limit": 100, "offset": 0}),
+    )
     if "error" in data:
         return ui.Alert(message=data["error"], type="error")
     articles = data.get("data") if isinstance(data.get("data"), list) else []

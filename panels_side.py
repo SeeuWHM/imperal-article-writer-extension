@@ -11,6 +11,7 @@ from imperal_sdk import ui
 
 from app import ext
 from api_client import call_backend
+from cache_helpers import LIST_CACHE_TTL, cached_call
 from navstate import load_nav
 
 
@@ -56,7 +57,10 @@ async def sidebar_panel(ctx):
     nav = await load_nav(ctx)
     active_project_id = nav.get("project_id") or ""
 
-    data = await call_backend(ctx, "GET", "/v1/projects", params={"limit": 100, "offset": 0})
+    data = await cached_call(
+        ctx, "projects", ctx.user.imperal_id, None, LIST_CACHE_TTL,
+        lambda: call_backend(ctx, "GET", "/v1/projects", params={"limit": 100, "offset": 0}),
+    )
     projects = data.get("data") if isinstance(data.get("data"), list) else []
     projects = projects or []
 
