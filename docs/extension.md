@@ -1,15 +1,17 @@
 # Article Writer Extension — Full Documentation
 
-**Version:** 2.5.0 (code HEAD = prod, deployed and verified live 2026-07-18) |
-**SDK:** imperal-sdk 5.9.9 | **app_id:** `imperal-article-writer-extension` | **tool_name:** `article_writer`
+**Version:** 2.6.0 (code HEAD = prod, verified live 2026-07-21) |
+**SDK:** imperal-sdk 5.9.12 | **app_id:** `imperal-article-writer-extension` | **tool_name:** `article_writer`
 **Git:** `github.com/SeeuWHM/imperal-article-writer-extension`
 **Backend:** `SeeU-Extensions/article-writer-backend/` (single source of truth for the backend —
 schema, API surface, generation pipeline, deploy status). This doc covers the extension side only.
 
-> **Resume point (2026-07-18).** Everything below reflects the real code at HEAD, and it is the real
-> code running in prod — confirmed live via `list_projects`/`open_project` calls today, not just
-> pushed-and-hoped. `capabilities` now declares `notify:push` (see "Deploy gotcha" below) — without it
-> every deploy silently rolled back to the previous commit.
+> **Resume point (2026-07-21).** Everything below reflects the real code at HEAD, and it is the real
+> code running in prod. `capabilities` declares `notify:push` (see "Deploy gotcha" below) — without it
+> every deploy silently rolled back to the previous commit. **2026-07-21 addition:** `cache_helpers.py`
+> now wraps the sidebar project-list and workspace board-list panel reads in a short `ctx.cache` TTL
+> (busted instantly by every mutating action's `refresh_panels` event) — the single-article detail view
+> stays deliberately uncached since it's what's actively being generated/edited.
 
 ---
 
@@ -61,7 +63,7 @@ Two credentials on every backend call (`api_client.py`):
 
 No cross-extension IPC anywhere — a thin, honest client of one backend.
 
-Every `call_backend` failure now carries a **structured `error_code`** (SDK 5.9.9
+Every `call_backend` failure now carries a **structured `error_code`** (SDK 5.9.12
 `ActionResult.error(code=...)`), not just prose — see "Error handling" below.
 
 ---
@@ -96,9 +98,11 @@ article-writer-extension/
 ├── handlers_edit.py      — read_full_article, edit_full_article (Webbee full-text read/edit)
 ├── panels_side.py        — LEFT "sidebar": active-project detail + compact project switcher
 ├── panels_workspace.py   — CENTER "workspace": article board + single-editor article view (H1 title)
-├── icon.svg · imperal.json · pyproject.toml (imperal-sdk>=5.9.9)
-└── tests/  test_handlers.py · test_richtext.py · test_edit.py · test_skeleton.py · test_params.py
-    (73 tests, all green)
+├── cache_helpers.py      — ctx.cache wrapper for panel LIST reads only (project list, article board);
+│                            the single-article detail view stays uncached (correctness > one HTTP call)
+├── icon.svg · imperal.json · pyproject.toml (imperal-sdk>=5.9.11)
+└── tests/  test_handlers.py · test_richtext.py · test_edit.py · test_skeleton.py · test_params.py ·
+    test_cache_helpers.py (75 tests, all green)
 ```
 
 Every file is under the 300-line limit.
@@ -246,7 +250,7 @@ with condition notes) exists only in Newsletter Writer.
 
 ## Error handling (2026-07-18)
 
-Every `call_backend()` failure now carries a structured `error_code` (SDK 5.9.9
+Every `call_backend()` failure now carries a structured `error_code` (SDK 5.9.12
 `ActionResult.error(code=...)`) instead of bare prose:
 
 | Situation | `error_code` | `retryable` |
@@ -308,7 +312,7 @@ A typical edit cycle = `read_full` + `edit_full`, so the user pays for both — 
 
 ## Tests
 
-73 tests (`../.venv-ext/bin/pytest tests/ -q`):
+75 tests (`../.venv-ext/bin/pytest tests/ -q`):
 - `test_handlers.py` — project/article CRUD, generate/patch, title-in-editor save, body-free
   guarantees, **`open_project` refreshes both panels + resets `article_id`**
 - `test_richtext.py` — HTML + document + markdown round-trips, H1-title extraction
@@ -317,6 +321,8 @@ A typical edit cycle = `read_full` + `edit_full`, so the user pays for both — 
   review count rises against the persisted baseline, seeds silently on first-ever run (no persisted
   doc yet — nothing "just finished," no false alert), never re-notifies when the count is unchanged
 - `test_params.py` — placeholder ids (`"unknown"`, `""`, …) rejected before any network call
+- `test_cache_helpers.py` — `cached_call()` TTL/key behaviour (fetch-once-then-serve-from-cache,
+  per-project cache-key isolation)
 
 ---
 
